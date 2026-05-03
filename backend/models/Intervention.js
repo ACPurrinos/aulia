@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const Intervention = sequelize.define('Intervention', {
   id: {
@@ -36,4 +36,4 @@ const Intervention = sequelize.define('Intervention', {
   timestamps: true 
 });
 
-module.exports = Intervention;
+export default Intervention;

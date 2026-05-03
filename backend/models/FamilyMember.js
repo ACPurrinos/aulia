@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const FamilyMember = sequelize.define('FamilyMember', {
   id: {
@@ -27,4 +27,4 @@ const FamilyMember = sequelize.define('FamilyMember', {
   }
 }, { timestamps: false });
 
-module.exports = FamilyMember;
+export default FamilyMember;

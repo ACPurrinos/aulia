@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const Referral = sequelize.define('Referral', {
   id: {
@@ -24,4 +24,4 @@ const Referral = sequelize.define('Referral', {
   }
 });
 
-module.exports = Referral;
+export default Referral;

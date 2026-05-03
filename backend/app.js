@@ -1,21 +1,21 @@
-require('dotenv').config();
-const express = require('express');
-const sequelize = require('./config/db');
+import 'dotenv/config';
+import express from 'express';
+import sequelize from './config/db.js';
 
 // --- 1. Importación de Modelos ---
-// Mantenemos el nombre en singular como definiste
-const User = require('./models/User');
-const Role = require('./models/Role'); 
-const Student = require('./models/Student');
-const FamilyMember = require('./models/FamilyMember');
-const CheckIn = require('./models/CheckIn');
-const Referral = require('./models/Referral');
-const CaseFile = require('./models/CaseFile');
-const Intervention = require('./models/Intervention');
-const Alert = require('./models/Alert');
-const Document = require('./models/Document');
-const Subject = require('./models/Subject');
-const Course = require('./models/Course');
+// En ES Modules es obligatorio agregar el .js en rutas locales
+import User from './models/User.js';
+import Role from './models/Role.js';
+import Student from './models/Student.js';
+import FamilyMember from './models/FamilyMember.js';
+import CheckIn from './models/CheckIn.js';
+import Referral from './models/Referral.js';
+import CaseFile from './models/CaseFile.js';
+import Intervention from './models/Intervention.js';
+import Alert from './models/Alert.js';
+import Document from './models/Document.js';
+import Subject from './models/Subject.js';
+import Course from './models/Course.js';
 
 const app = express();
 
