@@ -10,7 +10,7 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT,
     dialect: 'postgres',
     logging: false,
-   
+
     define: {
       freezeTableName: true // Evita la pluralización automática (ej: Role se queda como Role)
     }
