@@ -4,7 +4,8 @@
 
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
-import { ReferralStatus } from '../constants/referralStatus.js';
+import { ReferralStatus, ReferralCategories } from '../constants/index.js';
+
 
 const Referral = sequelize.define('Referral', {
 
@@ -14,12 +15,8 @@ const Referral = sequelize.define('Referral', {
     autoIncrement: true
   },
 
-  reason: {
-    type: DataTypes.ENUM(
-      'Academic',
-      'Socioemotional',
-      'Both'
-    ),
+  category: {
+    type: DataTypes.ENUM(...Object.values(ReferralCategories)),
     allowNull: false
   },
 
@@ -29,13 +26,9 @@ const Referral = sequelize.define('Referral', {
   },
 
   status: {
-    type: DataTypes.ENUM(
-      ReferralStatus.PENDING,
-      ReferralStatus.IN_PROGRESS,
-      ReferralStatus.MORE_INFO,
-      ReferralStatus.REJECTED
-    ),
+    type: DataTypes.ENUM(...Object.values(ReferralStatus)),
     defaultValue: ReferralStatus.PENDING
+  
   },
 
   reviewedAt: {

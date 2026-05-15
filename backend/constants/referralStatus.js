@@ -1,6 +1,6 @@
 export const ReferralStatus = {
-  PENDING: 'Pending',
-  IN_PROGRESS: 'In Progress',
-  MORE_INFO: 'More Info Required',
-  REJECTED: 'Rejected'
+  PENDING: 'Pendiente',
+  IN_PROGRESS: 'En curso',
+  MORE_INFO: 'Más información requerida',
+  REJECTED: 'Rechazada'
 };
