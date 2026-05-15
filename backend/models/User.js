@@ -34,17 +34,7 @@ const User = sequelize.define('User', {
     type: DataTypes.BOOLEAN,
     defaultValue: true
   },
-  specialty: {
-    type: DataTypes.ENUM(
-      'Psicopedagogía', 
-      'Psicología', 
-      'Trabajo Social', 
-      'Fonoaudiología',
-      'Otra especialidad',
-      'Ninguna' // Para docentes o admin
-    ),
-    defaultValue: 'Ninguna'
-  }
+  
 }, {
   timestamps: true
 });
