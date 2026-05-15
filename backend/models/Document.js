@@ -1,7 +1,3 @@
-// =========================
-// Document.js
-// =========================
-
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
 

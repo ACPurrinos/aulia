@@ -7,14 +7,7 @@ const Student = sequelize.define('Student', {
     primaryKey: true,
     autoIncrement: true
   },
-  firstName: {
-    type: DataTypes.STRING(45),
-    allowNull: false
-  },
-  lastName: {
-    type: DataTypes.STRING(45),
-    allowNull: false
-  },
+
   birthDate: {
     type: DataTypes.DATEONLY
   },
@@ -45,7 +38,7 @@ courseId: {
 
 }, {
   timestamps: true,
-  paranoid: true
+  paranoid: true // Borrado lógico
 });
 
 export default Student;
