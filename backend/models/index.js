@@ -168,6 +168,14 @@ Referral.belongsTo(User, {
   as: 'Reviewer'
 });
 
+Referral.hasOne(CaseFile, {
+  foreignKey: 'referralId'
+});
+
+CaseFile.belongsTo(Referral, {
+  foreignKey: 'referralId'
+});
+
 export {
   sequelize,
   User,

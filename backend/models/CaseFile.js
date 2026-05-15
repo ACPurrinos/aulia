@@ -36,7 +36,15 @@ const CaseFile = sequelize.define('CaseFile', {
       model: 'Student',
       key: 'id'
     }
+  },
+  referralId: {
+  type: DataTypes.INTEGER,
+  allowNull: false,
+  references: {
+    model: 'Referral',
+    key: 'id'
   }
+}
 
 }, {
   timestamps: true,
