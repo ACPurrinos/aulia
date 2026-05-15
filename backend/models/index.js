@@ -196,6 +196,18 @@ Alert.belongsTo(Student, { foreignKey: 'studentId' });
 Referral.hasOne(Alert, { foreignKey: 'referralId' });
 Alert.belongsTo(Referral, { foreignKey: 'referralId' });
 
+// El usuario (Docente/Gabinete) que detecta y carga la alerta manualmente
+User.hasMany(Alert, { foreignKey: 'createdById', as: 'CreatedAlerts' });
+Alert.belongsTo(User, { foreignKey: 'createdById', as: 'Creator' });
+
+// Para filtrar alertas por curso rápidamente
+Course.hasMany(Alert, { foreignKey: 'courseId' });
+Alert.belongsTo(Course, { foreignKey: 'courseId' });
+
+// Para saber qué acción del gabinete dio respuesta a esta alerta
+Intervention.hasMany(Alert, { foreignKey: 'interventionId' });
+Alert.belongsTo(Intervention, { foreignKey: 'interventionId' });
+
 export {
   sequelize,
   User,
