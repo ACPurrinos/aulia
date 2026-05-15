@@ -19,17 +19,7 @@ const TeacherAssignment = sequelize.define('TeacherAssignment', {
   freezeTableName: true,
   timestamps: true,
 
-  indexes: [
-    {
-      unique: true,
-      fields: [
-        'teacherId',
-        'courseId',
-        'subjectId',
-        'academicYear'
-      ]
-    }
-  ]
+  
 });
 
 export default TeacherAssignment;

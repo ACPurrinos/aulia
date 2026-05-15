@@ -11,7 +11,7 @@ export const startDatabase = async () => {
         console.log('✅ Conexión exitosa a PostgreSQL.');
 
         // Usamos alter: true para proteger tus datos de aquí en adelante
-        await sequelize.sync({ alter: true });
+        await sequelize.sync({ alter: true })
         console.log('✅ Modelos sincronizados.');
 
         // Ejecutamos la función de carga inicial
