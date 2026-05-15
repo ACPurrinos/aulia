@@ -21,7 +21,7 @@ export const startDatabase = async () => {
         console.log(`Base de Datos Activa: ${results[0].current_database}`);
         console.log('---');
     } catch (error) {
-        console.error('❌ ERROR AL INICIAR LA BASE DE DATOS:', error.message);
+        console.error(error);
     }
 };
 

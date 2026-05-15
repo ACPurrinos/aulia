@@ -12,6 +12,10 @@ import Alert from './Alert.js';
 import Document from './Document.js';
 import Subject from './Subject.js';
 import Course from './Course.js';
+import Notification from './Notification.js';
+import ReferralHistory from './ReferralHistory.js';
+import ReferralMessage from './ReferralMessage.js';
+import TeacherAssignment from './TeacherAssignment.js';
 
 // --- ROLES Y USUARIOS ---
 Role.hasMany(User, { foreignKey: 'roleId' });
@@ -70,20 +74,99 @@ Document.belongsTo(Student, { foreignKey: 'studentId' });
 Intervention.hasMany(Document, { foreignKey: 'interventionId' });
 Document.belongsTo(Intervention, { foreignKey: 'interventionId' });
 
-// --- ASIGNACIONES DOCENTES (Muchos a Muchos) ---
-const TeacherAssignment = sequelize.define('TeacherAssignment', {}, { 
-    freezeTableName: true, 
-    timestamps: false 
+// =========================
+// NOTIFICATIONS
+// =========================
+
+User.hasMany(Notification, {
+  foreignKey: 'userId'
 });
 
-User.belongsToMany(Subject, { through: TeacherAssignment });
-Subject.belongsToMany(User, { through: TeacherAssignment });
+Notification.belongsTo(User, {
+  foreignKey: 'userId'
+});
 
-User.belongsToMany(Course, { through: TeacherAssignment });
-Course.belongsToMany(User, { through: TeacherAssignment });
+// =========================
+// REFERRAL HISTORY
+// =========================
 
-Subject.belongsToMany(Course, { through: TeacherAssignment });
-Course.belongsToMany(Subject, { through: TeacherAssignment });
+Referral.hasMany(ReferralHistory, {
+  foreignKey: 'referralId'
+});
+
+ReferralHistory.belongsTo(Referral, {
+  foreignKey: 'referralId'
+});
+
+User.hasMany(ReferralHistory, {
+  foreignKey: 'changedBy'
+});
+
+ReferralHistory.belongsTo(User, {
+  foreignKey: 'changedBy'
+});
+
+// =========================
+// REFERRAL MESSAGES
+// =========================
+
+Referral.hasMany(ReferralMessage, {
+  foreignKey: 'referralId'
+});
+
+ReferralMessage.belongsTo(Referral, {
+  foreignKey: 'referralId'
+});
+
+User.hasMany(ReferralMessage, {
+  foreignKey: 'userId'
+});
+
+ReferralMessage.belongsTo(User, {
+  foreignKey: 'userId'
+});
+
+// --- ASIGNACIONES DOCENTES (Muchos a Muchos) ---
+// =========================
+// TEACHER ASSIGNMENTS
+// =========================
+
+// Un docente tiene muchas asignaciones
+User.hasMany(TeacherAssignment, {
+  foreignKey: 'teacherId'
+});
+
+TeacherAssignment.belongsTo(User, {
+  foreignKey: 'teacherId'
+});
+
+// Un curso tiene muchas asignaciones
+Course.hasMany(TeacherAssignment, {
+  foreignKey: 'courseId'
+});
+
+TeacherAssignment.belongsTo(Course, {
+  foreignKey: 'courseId'
+});
+
+// Una materia tiene muchas asignaciones
+Subject.hasMany(TeacherAssignment, {
+  foreignKey: 'subjectId'
+});
+
+TeacherAssignment.belongsTo(Subject, {
+  foreignKey: 'subjectId'
+});
+
+User.hasMany(Referral, {
+  foreignKey: 'reviewedBy',
+  as: 'ReviewedReferrals'
+});
+
+Referral.belongsTo(User, {
+  foreignKey: 'reviewedBy',
+  as: 'Reviewer'
+});
 
 export {
   sequelize,
@@ -99,5 +182,8 @@ export {
   Document,
   Subject,
   Course,
-  TeacherAssignment
+  TeacherAssignment,
+  Notification,
+  ReferralHistory,
+  ReferralMessage
 };

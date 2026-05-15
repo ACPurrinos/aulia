@@ -33,7 +33,8 @@ const Intervention = sequelize.define('Intervention', {
     type: DataTypes.TEXT
   }
 }, { 
-  timestamps: true 
+  timestamps: true, 
+  paranoid: true
 });
 
 export default Intervention;

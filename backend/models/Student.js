@@ -44,7 +44,8 @@ courseId: {
   }
 
 }, {
-  timestamps: true
+  timestamps: true,
+  paranoid: true
 });
 
 export default Student;
