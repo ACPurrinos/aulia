@@ -134,7 +134,7 @@ ReferralMessage.belongsTo(User, {
   foreignKey: 'userId'
 });
 
-// --- ASIGNACIONES DOCENTES (Muchos a Muchos) ---
+
 // =========================
 // TEACHER ASSIGNMENTS
 // =========================
@@ -183,6 +183,18 @@ Referral.hasOne(CaseFile, {
 CaseFile.belongsTo(Referral, {
   foreignKey: 'referralId'
 });
+
+// =========================
+// ALERTS
+// =========================
+
+// En tu archivo de asociaciones:
+Student.hasMany(Alert, { foreignKey: 'studentId' });
+Alert.belongsTo(Student, { foreignKey: 'studentId' });
+
+// Una derivación puede generar una alerta (o ninguna)
+Referral.hasOne(Alert, { foreignKey: 'referralId' });
+Alert.belongsTo(Referral, { foreignKey: 'referralId' });
 
 export {
   sequelize,
