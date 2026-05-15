@@ -1,7 +1,3 @@
-// =========================
-// ReferralHistory.js
-// =========================
-
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
 
@@ -14,7 +10,7 @@ const ReferralHistory = sequelize.define('ReferralHistory', {
   },
 
   oldStatus: {
-    type: DataTypes.STRING(45)   
+    type: DataTypes.STRING(45)
   },
 
   newStatus: {
@@ -24,15 +20,10 @@ const ReferralHistory = sequelize.define('ReferralHistory', {
 
   comment: {
     type: DataTypes.TEXT
-  },
-
-  changedAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
   }
 
 }, {
-  timestamps: false
+  timestamps: true
 });
 
 export default ReferralHistory;

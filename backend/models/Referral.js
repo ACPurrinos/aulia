@@ -14,11 +14,6 @@ const Referral = sequelize.define('Referral', {
     autoIncrement: true
   },
 
-  date: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  },
-
   reason: {
     type: DataTypes.ENUM(
       'Academic',
@@ -34,16 +29,14 @@ const Referral = sequelize.define('Referral', {
   },
 
   status: {
-  type: DataTypes.ENUM(
-    ReferralStatus.PENDING,
-    ReferralStatus.IN_PROGRESS,
-    ReferralStatus.MORE_INFO,
-    ReferralStatus.REJECTED
-  ),
-  defaultValue: ReferralStatus.PENDING
-},
-
-
+    type: DataTypes.ENUM(
+      ReferralStatus.PENDING,
+      ReferralStatus.IN_PROGRESS,
+      ReferralStatus.MORE_INFO,
+      ReferralStatus.REJECTED
+    ),
+    defaultValue: ReferralStatus.PENDING
+  },
 
   reviewedAt: {
     type: DataTypes.DATE

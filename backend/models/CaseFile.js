@@ -9,11 +9,6 @@ const CaseFile = sequelize.define('CaseFile', {
     autoIncrement: true
   },
 
-  openingDate: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  },
-
   subject: {
     type: DataTypes.STRING(100),
     allowNull: false
@@ -37,14 +32,15 @@ const CaseFile = sequelize.define('CaseFile', {
       key: 'id'
     }
   },
+
   referralId: {
-  type: DataTypes.INTEGER,
-  allowNull: false,
-  references: {
-    model: 'Referral',
-    key: 'id'
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Referral',
+      key: 'id'
+    }
   }
-}
 
 }, {
   timestamps: true,
