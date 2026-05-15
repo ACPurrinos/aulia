@@ -1,10 +1,6 @@
-// =========================
-// Referral.js
-// =========================
-
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
-import { ReferralStatus, ReferralCategories } from '../constants/index.js';
+import { ReferralStatusEnum, ReferralCategoriesEnum } from '../enums/index.js';
 
 
 const Referral = sequelize.define('Referral', {
@@ -16,7 +12,7 @@ const Referral = sequelize.define('Referral', {
   },
 
   category: {
-    type: DataTypes.ENUM(...Object.values(ReferralCategories)),
+    type: DataTypes.ENUM(...Object.values(ReferralCategoriesEnum)),
     allowNull: false
   },
 
@@ -26,8 +22,8 @@ const Referral = sequelize.define('Referral', {
   },
 
   status: {
-    type: DataTypes.ENUM(...Object.values(ReferralStatus)),
-    defaultValue: ReferralStatus.PENDING
+    type: DataTypes.ENUM(...Object.values(ReferralStatusEnum)),
+    defaultValue: ReferralStatusEnum.PENDING
   
   },
 

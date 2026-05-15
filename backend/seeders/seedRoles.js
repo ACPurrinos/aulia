@@ -1,5 +1,5 @@
 import { Role } from '../models/index.js';
-import { UserRoles } from '../constants/index.js'; // Traemos las constantes
+import { UserRolesEnum } from '../enums/index.js'; // Traemos las constantes
 
 const seedRoles = async () => {
   try {
@@ -8,7 +8,7 @@ const seedRoles = async () => {
     if (rolesCount === 0) {
       // Object.values(UserRoles) convierte tu objeto en un array: 
       // ['Admin', 'Gabinete', 'Preceptor', ...]
-      const rolesToCreate = Object.values(UserRoles).map(roleName => ({
+      const rolesToCreate = Object.values(UserRolesEnum).map(roleName => ({
         name: roleName
       }));
 
