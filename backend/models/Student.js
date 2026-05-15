@@ -18,16 +18,31 @@ const Student = sequelize.define('Student', {
   birthDate: {
     type: DataTypes.DATEONLY
   },
-  grade: {
-    type: DataTypes.STRING(10) 
-  },
-  division: {
-    type: DataTypes.STRING(10) // Ej: "A"
-  },
+  
   familyConsent: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    unique: true, 
+    references: {
+      model: 'User', 
+      key: 'id'
+    }
+  },
+  active: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+},
+courseId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'Course',
+      key: 'id'
+    }
   }
+
 }, {
   timestamps: true
 });

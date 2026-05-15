@@ -10,10 +10,11 @@ const seedRoles = async () => {
         { name: 'Gabinete' },
         { name: 'Preceptor' },
         { name: 'Docente' },
-        { name: 'Directivo' }
+        { name: 'Directivo' },
+        { name: 'Alumno' }
       ]);
 
-      console.log('🌱 Roles iniciales creados con éxito.');
+      console.log('Roles iniciales creados con éxito.');
     }
   } catch (error) {
     console.error('❌ Error al sembrar roles:', error.message);

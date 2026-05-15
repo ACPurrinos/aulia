@@ -13,43 +13,75 @@ import Document from './Document.js';
 import Subject from './Subject.js';
 import Course from './Course.js';
 
-Role.hasMany(User);
-User.belongsTo(Role);
+// --- ROLES Y USUARIOS ---
+Role.hasMany(User, { foreignKey: 'roleId' });
+User.belongsTo(Role, { foreignKey: 'roleId' });
 
-Course.hasMany(Student);
-Student.belongsTo(Course);
-Student.hasMany(FamilyMember);
-FamilyMember.belongsTo(Student);
+// --- RELACIÓN 1 A 1: ESTUDIANTE - USUARIO ---
+User.hasOne(Student, {
+  foreignKey: 'userId',
+  onDelete: 'CASCADE' 
+});
+Student.belongsTo(User, {
+  foreignKey: 'userId'
+});
 
-Student.hasMany(CheckIn);
-CheckIn.belongsTo(Student);
-Course.hasMany(CheckIn); 
-CheckIn.belongsTo(Course);
-Student.hasMany(Alert);
-Alert.belongsTo(Student);
+// --- ESTRUCTURA ESCOLAR ---
+Course.hasMany(Student, { foreignKey: 'courseId' });
+Student.belongsTo(Course, { foreignKey: 'courseId' });
 
-User.hasMany(Referral);
-Referral.belongsTo(User);
-Student.hasMany(Referral);
-Referral.belongsTo(Student);
+Student.hasMany(FamilyMember, { foreignKey: 'studentId' });
+FamilyMember.belongsTo(Student, { foreignKey: 'studentId' });
 
-Student.hasMany(CaseFile);
-CaseFile.belongsTo(Student);
-CaseFile.hasMany(Intervention);
-Intervention.belongsTo(CaseFile);
-User.hasMany(Intervention);
-Intervention.belongsTo(User);
+// --- SEGUIMIENTO Y CHECK-INS ---
+Student.hasMany(CheckIn, { foreignKey: 'studentId' });
+CheckIn.belongsTo(Student, { foreignKey: 'studentId' });
 
-Student.hasMany(Document);
-Document.belongsTo(Student);
-Intervention.hasMany(Document);
-Document.belongsTo(Intervention);
+Course.hasMany(CheckIn, { foreignKey: 'courseId' }); 
+CheckIn.belongsTo(Course, { foreignKey: 'courseId' });
 
-const TeacherAssignment = sequelize.define('TeacherAssignment', {}, { timestamps: false });
+Student.hasMany(Alert, { foreignKey: 'studentId' });
+Alert.belongsTo(Student, { foreignKey: 'studentId' });
+
+// --- GABINETE (DERIVACIONES E INTERVENCIONES) ---
+// ReferrerId es el Docente/Preceptor que inicia la derivación
+User.hasMany(Referral, { foreignKey: 'referrerId' });
+Referral.belongsTo(User, { foreignKey: 'referrerId' });
+
+Student.hasMany(Referral, { foreignKey: 'studentId' });
+Referral.belongsTo(Student, { foreignKey: 'studentId' });
+
+// Legajo y Actuaciones
+Student.hasMany(CaseFile, { foreignKey: 'studentId' });
+CaseFile.belongsTo(Student, { foreignKey: 'studentId' });
+
+CaseFile.hasMany(Intervention, { foreignKey: 'caseFileId' });
+Intervention.belongsTo(CaseFile, { foreignKey: 'caseFileId' });
+
+// ProfessionalId es el miembro del gabinete que hace la intervención
+User.hasMany(Intervention, { foreignKey: 'professionalId' });
+Intervention.belongsTo(User, { foreignKey: 'professionalId' });
+
+// Un estudiante tiene muchos documentos (su carpeta completa)
+Student.hasMany(Document, { foreignKey: 'studentId' });
+Document.belongsTo(Student, { foreignKey: 'studentId' });
+
+// Una intervención puede tener documentos adjuntos (informes, tests)
+Intervention.hasMany(Document, { foreignKey: 'interventionId' });
+Document.belongsTo(Intervention, { foreignKey: 'interventionId' });
+
+// --- ASIGNACIONES DOCENTES (Muchos a Muchos) ---
+const TeacherAssignment = sequelize.define('TeacherAssignment', {}, { 
+    freezeTableName: true, 
+    timestamps: false 
+});
+
 User.belongsToMany(Subject, { through: TeacherAssignment });
 Subject.belongsToMany(User, { through: TeacherAssignment });
+
 User.belongsToMany(Course, { through: TeacherAssignment });
 Course.belongsToMany(User, { through: TeacherAssignment });
+
 Subject.belongsToMany(Course, { through: TeacherAssignment });
 Course.belongsToMany(Subject, { through: TeacherAssignment });
 

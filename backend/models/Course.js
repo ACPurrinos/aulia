@@ -18,7 +18,12 @@ const Course = sequelize.define('Course', {
   division: {
     type: DataTypes.STRING(10), // Ej: "A", "B"
     allowNull: false
-  }
+  },
+
+  active: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+}
 }, { timestamps: false });
 
 export default Course;

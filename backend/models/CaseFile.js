@@ -22,6 +22,15 @@ const CaseFile = sequelize.define('CaseFile', {
   status: {
     type: DataTypes.ENUM('Open', 'Closed'),
     defaultValue: 'Open'
+  },
+  // --- CLAVE FORÁNEA AGREGADA ---
+  studentId: {
+    type: DataTypes.INTEGER,
+    allowNull: false, // Un legajo no puede existir sin un alumno
+    references: {
+      model: 'Student', // En singular por el freezeTableName
+      key: 'id'
+    }
   }
 });
 

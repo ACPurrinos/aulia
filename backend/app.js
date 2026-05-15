@@ -11,13 +11,14 @@ app.get('/', (req, res) => {
   res.send('Aulia API 🚀 - Sistema de Gestión Escolar listo.');
 });
 
-app.listen(PORT, async() => {  
-  try{
+app.listen(PORT, async () => {  
+  try {
     await startDatabase();
     console.log(`🚀 Servidor Aulia corriendo en http://localhost:${PORT}`);
   } 
-  catch{
+  catch (error) { 
     console.error('Error al iniciar el servidor: ', error);
   }
 });
+
 

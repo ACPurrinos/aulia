@@ -25,6 +25,17 @@ const Document = sequelize.define('Document', {
   uploadDate: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
+  },
+  // CLAVES FORÁNEAS
+  studentId: {
+    type: DataTypes.INTEGER,
+    allowNull: false, // Siempre tiene que ser de alguien
+    references: { model: 'Student', key: 'id' }
+  },
+  interventionId: {
+    type: DataTypes.INTEGER,
+    allowNull: true, // Solo si el documento nació en una intervención
+    references: { model: 'Intervention', key: 'id' }
   }
 }, { 
   timestamps: true 
