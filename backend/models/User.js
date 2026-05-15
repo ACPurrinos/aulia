@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
+import { UserRoles } from '../constants/index.js'; 
 
 const User = sequelize.define('User', {
   id: {
@@ -10,7 +11,7 @@ const User = sequelize.define('User', {
   username: {
     type: DataTypes.STRING(45),
     allowNull: false,
-    unique: true // No puede haber dos iguales
+    unique: true 
   },
   firstName: {
     type: DataTypes.STRING(45),
@@ -29,14 +30,30 @@ const User = sequelize.define('User', {
   password: {
     type: DataTypes.STRING,
     allowNull: false
+    // Nota: Aquí guardarás el hash de bcrypt, no el texto plano
   },
   active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
   },
-  
+  // Relación manual (Foreign Key) por si Sequelize no la crea automáticamente
+  roleId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Role', 
+      key: 'id'
+    }
+  }
 }, {
-  timestamps: true
+  timestamps: true,
+  // ESTO ES CLAVE: Protege la contraseña en las consultas
+  defaultScope: {
+    attributes: { exclude: ['password'] }
+  },
+  scopes: {
+    withPassword: { attributes: {}, }
+  }
 });
 
 export default User;
