@@ -9,6 +9,18 @@ const ReferralHistory = sequelize.define('ReferralHistory', {
     autoIncrement: true
   },
 
+  action: {
+    type: DataTypes.ENUM(
+      'Created',
+      'Accepted',
+      'Rejected',
+      'MoreInfoRequested',
+      'InfoProvided',
+      'Closed'
+    ),
+    allowNull: false
+  },
+
   oldStatus: {
     type: DataTypes.STRING(45)
   },
@@ -20,6 +32,15 @@ const ReferralHistory = sequelize.define('ReferralHistory', {
 
   comment: {
     type: DataTypes.TEXT
+  },
+
+  changedBy: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'User',
+      key: 'id'
+    }
   }
 
 }, {
