@@ -23,11 +23,19 @@ User.belongsTo(Role, { foreignKey: 'roleId' });
 
 // --- RELACIÓN 1 A 1: ESTUDIANTE - USUARIO ---
 User.hasOne(Student, {
-  foreignKey: 'userId',
+  foreignKey: {
+    name:'userId',
+    allowNull: false,
+    unique: true
+  },
   onDelete: 'CASCADE' 
 });
 Student.belongsTo(User, {
-  foreignKey: 'userId'
+  foreignKey: {
+    name: 'userId',
+    allowNull: false,
+    unique: true
+  }
 });
 
 // --- ESTRUCTURA ESCOLAR ---
