@@ -57,8 +57,8 @@ Alert.belongsTo(Student, { foreignKey: 'studentId' });
 
 // --- GABINETE (DERIVACIONES E INTERVENCIONES) ---
 // ReferrerId es el Docente/Preceptor que inicia la derivación
-User.hasMany(Referral, { foreignKey: 'referrerId' });
-Referral.belongsTo(User, { foreignKey: 'referrerId' });
+User.hasMany(Referral, { foreignKey: 'referrerId', as: 'SubmittedReferrals' }); // Alias agregado
+Referral.belongsTo(User, { foreignKey: 'referrerId', as: 'Referrer' });        // Alias agregado
 
 Student.hasMany(Referral, { foreignKey: 'studentId' });
 Referral.belongsTo(Student, { foreignKey: 'studentId' });
@@ -188,9 +188,6 @@ CaseFile.belongsTo(Referral, {
 // ALERTS
 // =========================
 
-// En tu archivo de asociaciones:
-Student.hasMany(Alert, { foreignKey: 'studentId' });
-Alert.belongsTo(Student, { foreignKey: 'studentId' });
 
 // Una derivación puede generar una alerta (o ninguna)
 Referral.hasOne(Alert, { foreignKey: 'referralId' });

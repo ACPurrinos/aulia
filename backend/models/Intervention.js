@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
+import { InterventionTypes } from '../enums/interventionEnums.js';
 
 const Intervention = sequelize.define('Intervention', {
 
@@ -15,14 +16,7 @@ const Intervention = sequelize.define('Intervention', {
   },
 
   type: {
-    type: DataTypes.ENUM(
-      'Classroom Observation',
-      'Individual Interview',
-      'Family Meeting',
-      'Internal Staff Meeting',
-      'External Professional Contact',
-      'Report Writing'
-    ),
+    type: DataTypes.ENUM(...Object.values(InterventionTypes)), // Dinámico y blindado
     allowNull: false
   },
 

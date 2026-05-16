@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
+import { DocumentCategories } from '../enums/documentEnums.js';
 
 const Document = sequelize.define('Document', {
 
@@ -33,13 +34,8 @@ const Document = sequelize.define('Document', {
   },
 
   category: {
-    type: DataTypes.ENUM(
-      'Medical',
-      'Legal',
-      'Pedagogical',
-      'Other'
-    ),
-    defaultValue: 'Other'
+    type: DataTypes.ENUM(...Object.values(DocumentCategories)), 
+    defaultValue: DocumentCategories.OTHER
   },
 
   uploadDate: {

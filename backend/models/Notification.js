@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
+import { NotificationTypes } from '../enums/notificationEnums.js';
 
 const Notification = sequelize.define('Notification', {
 
@@ -15,13 +16,8 @@ const Notification = sequelize.define('Notification', {
   },
 
   type: {
-    type: DataTypes.ENUM(
-      'Referral',
-      'Alert',
-      'CheckIn',
-      'System'
-    ),
-    defaultValue: 'System'
+    type: DataTypes.ENUM(...Object.values(NotificationTypes)), // Dinámico y centralizado
+    defaultValue: NotificationTypes.SYSTEM
   },
 
   isRead: {
@@ -31,7 +27,7 @@ const Notification = sequelize.define('Notification', {
 
   link: {
     type: DataTypes.STRING(255)
-  }
+  }  // Clave para que al hacer clic los lleve directo al legajo o derivación
 
 }, {
   timestamps: true

@@ -1,4 +1,3 @@
-// backend/models/Alert.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
 import { AlertTypes, AlertPriorities } from '../enums/index.js';
@@ -13,7 +12,7 @@ const Alert = sequelize.define('Alert', {
     primaryKey: true,
     autoIncrement: true
   },
-  // Categorización para análisis de datos y triaje
+
   type: {
     type: DataTypes.ENUM(...Object.values(AlertTypes)),
     allowNull: false,
@@ -28,7 +27,7 @@ const Alert = sequelize.define('Alert', {
   },
   // Descripción fenomenológica: qué se observa, sin juicios de valor
   description: {
-    type: DataTypes.STRING(500), // Ampliado para permitir descripciones cualitativas ricas
+    type: DataTypes.STRING(500), 
     allowNull: false,
     validate: {
       len: [5, 500] 

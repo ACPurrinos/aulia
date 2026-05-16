@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
+import { CheckInContexts, EmotionalStates } from '../enums/checkinEnums.js';
 
 const CheckIn = sequelize.define('CheckIn', {
   id: {
@@ -7,22 +8,28 @@ const CheckIn = sequelize.define('CheckIn', {
     primaryKey: true,
     autoIncrement: true
   },
+
   emotionalState: {
-    type: DataTypes.STRING(45),
+    type: DataTypes.ENUM(...Object.values(EmotionalStates)), 
     allowNull: false
   },
+
   context: {
-    type: DataTypes.STRING(45)
+    type: DataTypes.ENUM(...Object.values(CheckInContexts)), 
+    allowNull: true // Puede ser opcional por si el check-in es general
   },
+
   comment: {
     type: DataTypes.TEXT
   },
+
   helpRequested: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   }
 }, {
-  timestamps: true
+  timestamps: true, 
+  
 });
 
 export default CheckIn;
