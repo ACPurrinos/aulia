@@ -126,13 +126,9 @@ ReferralMessage.belongsTo(Referral, {
   foreignKey: 'referralId'
 });
 
-User.hasMany(ReferralMessage, {
-  foreignKey: 'userId'
-});
-
-ReferralMessage.belongsTo(User, {
-  foreignKey: 'userId'
-});
+// El usuario (persona) que redactó el mensaje dentro de la derivación
+User.hasMany(ReferralMessage, { foreignKey: 'senderId' });
+ReferralMessage.belongsTo(User, { foreignKey: 'senderId', as: 'Sender' });
 
 
 // =========================

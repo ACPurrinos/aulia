@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
+import { ReferralStatusEnum, ReferralActionEnum } from '../enums/index.js';
 
 const ReferralHistory = sequelize.define('ReferralHistory', {
 
@@ -10,25 +11,18 @@ const ReferralHistory = sequelize.define('ReferralHistory', {
   },
 
   action: {
-    type: DataTypes.ENUM(
-      'Created',
-      'Accepted',
-      'Rejected',
-      'MoreInfoRequested',
-      'InfoProvided',
-      'Closed'
-    ),
-    allowNull: false
-  },
+  type: DataTypes.ENUM(...Object.values(ReferralActionEnum)),
+  allowNull: false
+},
 
   oldStatus: {
-    type: DataTypes.STRING(45)
-  },
+  type: DataTypes.ENUM(...Object.values(ReferralStatusEnum))
+},
 
-  newStatus: {
-    type: DataTypes.STRING(45),
-    allowNull: false
-  },
+newStatus: {
+  type: DataTypes.ENUM(...Object.values(ReferralStatusEnum)),
+  allowNull: false
+},
 
   comment: {
     type: DataTypes.TEXT

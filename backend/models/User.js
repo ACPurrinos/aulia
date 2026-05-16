@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
-import { UserRolesEnum } from '../Enums/index.js'; 
+import { UserRolesEnum } from '../enums/index.js'; 
 
 const User = sequelize.define('User', {
   id: {
@@ -36,15 +36,7 @@ const User = sequelize.define('User', {
     type: DataTypes.BOOLEAN,
     defaultValue: true
   },
-  // Relación manual (Foreign Key) por si Sequelize no la crea automáticamente
-  roleId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Role', 
-      key: 'id'
-    }
-  }
+  
 }, {
   timestamps: true,
   // Protege la contraseña excluyendola de las consultas
