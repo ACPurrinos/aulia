@@ -1,7 +1,7 @@
 /**
  * Categorías de documentos para el legajo del gabinete.
  */
-export const DocumentCategories = {
+export const DocumentCategories = Object.freeze({
   // Diagnósticos, recetas, certificados de salud, informes de neurólogos o psiquiatras.
   MEDICAL: 'Médico / Salud',
   
@@ -22,4 +22,4 @@ export const DocumentCategories = {
   
   // Cualquier papel que no encaje en las categorías anteriores.
   OTHER: 'Otros'
-};
+});

@@ -47,7 +47,7 @@ const User = sequelize.define('User', {
   }
 }, {
   timestamps: true,
-  // ESTO ES CLAVE: Protege la contraseña en las consultas
+  // Protege la contraseña excluyendola de las consultas
   defaultScope: {
     attributes: { exclude: ['password'] }
   },
