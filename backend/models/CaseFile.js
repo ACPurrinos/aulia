@@ -20,22 +20,7 @@ const CaseFile = sequelize.define('CaseFile', {
     type: DataTypes.ENUM(...Object.values(CaseFileStatus)),
     defaultValue: CaseFileStatus.OPEN
   },
-  studentId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Student', 
-      key: 'id'
-    }
-  },
-  referralId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Referral', 
-      key: 'id'
-    }
-  }
+ 
 }, {
   timestamps: true,
   paranoid: true

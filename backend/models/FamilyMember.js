@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
+import { FamilyRelationships } from '../enums/index.js';
 
 const FamilyMember = sequelize.define('FamilyMember', {
   id: {
@@ -16,7 +17,8 @@ const FamilyMember = sequelize.define('FamilyMember', {
     allowNull: false
   },
   relationship: {
-    type: DataTypes.STRING(45) // Ej: 'Mother', 'Father', 'Guardian'
+    type: DataTypes.ENUM(...Object.values(FamilyRelationships)), // 'Madre', 'Padre', 'Tutor Legal', etc.
+    allowNull: false
   },
   phone: {
     type: DataTypes.STRING(20)

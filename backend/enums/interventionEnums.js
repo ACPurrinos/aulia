@@ -24,3 +24,10 @@ export const InterventionTypes = Object.freeze({
   // El tiempo que se toma el profesional para redactar informes, PPIs o actas oficiales.
   REPORT_WRITING: 'Redacción de Informe / Documentación'
 });
+
+export const InterventionStatus = Object.freeze({
+  PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  RESOLVED: 'RESOLVED',
+  REFERRED: 'REFERRED'
+});

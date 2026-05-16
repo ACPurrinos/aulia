@@ -38,24 +38,7 @@ const Alert = sequelize.define('Alert', {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
-  // Relación con el sujeto de aprendizaje
-  studentId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Student', 
-      key: 'id'
-    }
-  },
-  // Trazabilidad: Vinculación con el proceso de derivación original
-  referralId: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'Referral',
-      key: 'id'
-    }
-  }
+  
 }, { 
   timestamps: true
 });
