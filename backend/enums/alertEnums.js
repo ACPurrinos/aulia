@@ -2,7 +2,7 @@
  * Dominios basados en el modelo integral de intervención psicopedagógica.
  * Clasificamos las alertas según la dimensión del desarrollo afectada.
  */
-export const AlertTypes = {
+export const AlertTypes = Object.freeze({
   // Dimensión Socio-Emocional (Basado en bienestar subjetivo)
   MOOD_DYSREGULATION: 'Desregulación del Ánimo', 
   CHECKIN_AUTO: 'Detección Automática (Check-in)',
@@ -20,13 +20,13 @@ export const AlertTypes = {
 
   // Genérico
   UNCLASSIFIED: 'Otras Observaciones'
-};
+});
 
 /**
  * Niveles de Prioridad según el Triaje Psicopedagógico
  */
-export const AlertPriorities = {
+export const AlertPriorities = Object.freeze({
   LOW: 'Baja - Seguimiento preventivo',
   MEDIUM: 'Media - Requiere intervención',
   HIGH: 'Alta - Intervención inmediata'
-};
+});

@@ -1,10 +1,10 @@
-export const CaseFilePriority = {
+export const CaseFilePriority = Object.freeze({
   LOW: 'Baja',
   MEDIUM: 'Media',
   HIGH: 'Alta'
-};
+});
 
-export const CaseFileStatus = {
+export const CaseFileStatus = Object.freeze({
   OPEN: 'Abierto',
   CLOSED: 'Cerrado'
-};
+});

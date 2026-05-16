@@ -2,14 +2,14 @@
  * Estados emocionales para el Check-In del alumno.
  * Mapea los estados básicos de regulación emocional y del ánimo.
  */
-export const EmotionalStates = {
+export const EmotionalStates = Object.freeze({
   HAPPY: 'Feliz / Con energía',
   CALM: 'Tranquilo / Enfocado',
   TIRED: 'Cansado / Aburrido',
   SAD: 'Triste / Desanimado',
   ANXIOUS: 'Nervioso / Ansioso',
   ANGRY: 'Enojado / Frustrado'
-};
+});
 
 
 /**
@@ -17,7 +17,7 @@ export const EmotionalStates = {
  * Ayuda al gabinete a entender si el estado emocional está atado a lo académico,
  * a lo social o al entorno familiar.
  */
-export const CheckInContexts = {
+export const CheckInContexts = Object.freeze({
   START_OF_DAY: 'Inicio de Jornada',
   END_OF_DAY: 'Fin de Jornada',
   BEFORE_EXAM: 'Antes de un Examen', 
@@ -27,4 +27,4 @@ export const CheckInContexts = {
   AT_HOME: 'En Casa',                
   CABINET: 'Espacio de Gabinete',
   OTHER: 'En otro lado'              
-};
+});

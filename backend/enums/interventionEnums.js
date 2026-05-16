@@ -2,7 +2,7 @@
  * Tipos de Intervención oficial del Gabinete/Equipo de Orientación.
  * Registra la acción concreta realizada para el seguimiento del caso.
  */
-export const InterventionTypes = {
+export const InterventionTypes = Object.freeze({
   // Cuando van a ver cómo se comporta o integra el chico en el salón.
   CLASSROOM_OBSERVATION: 'Observación de Aula',
   
@@ -23,4 +23,4 @@ export const InterventionTypes = {
   
   // El tiempo que se toma el profesional para redactar informes, PPIs o actas oficiales.
   REPORT_WRITING: 'Redacción de Informe / Documentación'
-};
+});
