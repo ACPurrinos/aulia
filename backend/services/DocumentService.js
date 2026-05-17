@@ -2,28 +2,77 @@ import DocumentRepository from '../repositories/DocumentRepository.js';
 
 class DocumentService {
 
-  // 1. Adjuntar un documento a una intervención o legajo
+  // Registrar/subir un nuevo documento
   async uploadDocument(documentData) {
-    if (!documentData.fileUrl) {
-      throw new Error('La URL o ruta del archivo es obligatoria.');
+
+    if (!documentData.fileName) {
+      throw new Error('El nombre del documento es obligatorio.');
     }
+
+    if (!documentData.storageKey) {
+      throw new Error('La clave de almacenamiento es obligatoria.');
+    }
+
+    if (!documentData.studentId) {
+      throw new Error('El documento debe estar asociado a un estudiante.');
+    }
+
+    if (!documentData.uploadedBy) {
+      throw new Error('Debe especificarse qué usuario subió el documento.');
+    }
+
     return await DocumentRepository.create(documentData);
   }
 
-  // 2. NUEVO: Buscar y obtener un documento específico para poder "verlo"
+  // Obtener documento por ID
   async getDocumentById(id) {
+
     const document = await DocumentRepository.getById(id);
+
     if (!document) {
-      throw new Error('El documento solicitado no existe.');
+      throw new Error('Documento no encontrado.');
     }
-    return document; // Acá viaja la fileUrl que el frontend va a usar para abrir el archivo
+
+    return document;
   }
 
-  // 3. Eliminar un documento del sistema
+  // Obtener todos los documentos de un estudiante
+  async getStudentDocuments(studentId) {
+
+    return await DocumentRepository.getByStudentId(studentId);
+  }
+
+  // Obtener documentos de una intervención
+  async getInterventionDocuments(interventionId) {
+
+    return await DocumentRepository.getByInterventionId(interventionId);
+  }
+
+  // Actualizar documento
+  async updateDocument(id, updateData) {
+
+    const updatedDocument = await DocumentRepository.update(id, updateData);
+
+    if (!updatedDocument) {
+      throw new Error('No se pudo actualizar el documento.');
+    }
+
+    return updatedDocument;
+  }
+
+  // Eliminar documento
   async deleteDocument(id) {
-    const success = await DocumentRepository.delete(id);
-    if (!success) throw new Error('El documento no existe o no pudo ser eliminado.');
-    return { message: 'Documento eliminado con éxito.' };
+
+    const deleted = await DocumentRepository.delete(id);
+
+    if (!deleted) {
+      throw new Error('Documento no encontrado.');
+    }
+
+    return {
+      success: true,
+      message: 'Documento eliminado correctamente.'
+    };
   }
 }
 

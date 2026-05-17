@@ -1,57 +1,88 @@
-import Referral from '../models/Referral.js'
+import { Referral, Student, User, CaseFile } from '../models/index.js';
 
 class ReferralRepository {
 
-    async saveReferral(referralData) {
-        try {
-            return await Referral.create(referralData);
-        } catch (error) {
-            console.log('Save Error: ', error);
-        }
-    } 
-
-    async findAllReferrals(){
-        try {
-            const PAGE_LIMIT = 10;
-        const DEFAULT_PAGE = 1;
-
-        const offset = (DEFAULT_PAGE - 1) * PAGE_LIMIT;
-        
-        return await Referral.findAndCountAll({
-            limit: PAGE_LIMIT,
-            offset: offset,
-            order: [['createdAt', 'DESC']],
-        });
-        } catch (error) {
-            console.log('Find Error: ', error);
-        }      
+  async create(referralData) {
+    try {
+      return await Referral.create(referralData);
+    } catch (error) {
+      throw new Error(`Error creating referral: ${error.message}`);
     }
+  }
 
-    async findReferralById(id) {
-        try {
-            return await Referral.findByPk(id);    
-        } catch (error) {
-            console.log('Find Error: ', error);
-        }       
+  async getAll() {
+    try {
+      return await Referral.findAll({
+        include: [
+          {
+            model: Student,
+            attributes: ['id', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'referrer',
+            attributes: ['id', 'firstName', 'lastName']
+          },
+          {
+            model: CaseFile,
+            attributes: ['id', 'status'],
+            required: false
+          }
+        ],
+        order: [['createdAt', 'DESC']]
+      });
+    } catch (error) {
+      throw new Error(`Error fetching referrals: ${error.message}`);
     }
+  }
 
-    async updateReferral(id, data) {
-        try {
-            const referral = await this.findById(id);
-        if (!referral) return null;
-
-        return await Referral.update(data);
-        } catch (error) {
-            console.log('Update Error: ', error);
-        }     
+  async getById(id) {
+    try {
+      return await Referral.findByPk(id, {
+        include: [
+          {
+            model: Student,
+            attributes: ['id', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'referrer',
+            attributes: ['id', 'firstName', 'lastName']
+          }
+        ]
+      });
+    } catch (error) {
+      throw new Error(`Error fetching referral: ${error.message}`);
     }
+  }
 
-    async deleteReferral(id) {
-        try {
-            const deleted = await Referral.destroy({ where: { id } });
-        return deleted > 0;
-        } catch (error) {
-            console.log('Delete Error: ', error);
-        }
+  async update(id, updateData) {
+    try {
+      const referral = await Referral.findByPk(id);
+
+      if (!referral) return null;
+
+      return await referral.update(updateData);
+
+    } catch (error) {
+      throw new Error(`Error updating referral: ${error.message}`);
     }
+  }
+
+  async delete(id) {
+    try {
+      const referral = await Referral.findByPk(id);
+
+      if (!referral) return false;
+
+      await referral.destroy();
+
+      return true;
+
+    } catch (error) {
+      throw new Error(`Error deleting referral: ${error.message}`);
+    }
+  }
 }
+
+export default new ReferralRepository();

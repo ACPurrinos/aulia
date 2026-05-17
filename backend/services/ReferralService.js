@@ -2,100 +2,157 @@ import ReferralRepository from '../repositories/ReferralRepository.js';
 import CaseFileRepository from '../repositories/CaseFileRepository.js';
 import ReferralHistoryService from './ReferralHistoryService.js';
 
+
 class ReferralService {
 
-  // 1. Cuando un docente envía una nueva derivación desde su panel
   async createReferral(referralData, teacherId) {
-    const newReferral = await ReferralRepository.create({
-      ...referralData,
-      status: 'Pendiente' // Toda derivación nace en evaluación
-    });
 
-    // Guardamos en el historial que el docente la inició
-    await ReferralHistoryService.logStatusChange(
-      newReferral.id, 
-      'Pendiente', 
-      teacherId, 
-      'Derivación creada por el docente.'
-    );
+    try {
 
-    return newReferral;
-  }
-
-  // 2. Cuando el gabinete evalúa la derivación y le da el "ACEPTAR"
-  async acceptReferral(referralId, cabinetUserId, observations = '') {
-    const referral = await ReferralRepository.getById(referralId);
-    if (!referral) throw new Error('La derivación no existe.');
-    if (referral.status !== 'Pendiente') throw new Error('Esta derivación ya fue procesada.');
-
-    // Buscamos si el alumno ya tiene un legajo existente en la base de datos
-    // Nota: Necesitás el método getByStudentId en tu CaseFileRepository que traiga el legajo sin filtrar por estado
-    let caseFile = await CaseFileRepository.getByStudentId(referral.studentId);
-    let historyMessage = '';
-
-    if (!caseFile) {
-      // CASO A: Es la primera vez del alumno en el gabinete. Creamos legajo de cero.
-      caseFile = await CaseFileRepository.create({
-        studentId: referral.studentId,
-        status: 'Abierto',
-        openingDate: new Date(),
-        priority: 'Media',
-        description: `Legajo inicial unificado. Creado a partir de derivación por ${referral.category}.`
+      const newReferral = await ReferralRepository.create({
+        ...referralData,
+        referrerId: teacherId,
+        status: ReferralStatusEnum.PENDING
       });
-      historyMessage = 'Derivación aceptada. Se creó el Legajo unificado del alumno por primera vez.';
-    } else {
-      // CASO B: El alumno ya tenía legajo.
-      if (caseFile.status === 'Cerrado') {
-        // Si estaba archivado, lo REABRIMOS
-        await CaseFileRepository.update(caseFile.id, {
-          status: 'Abierto',
-          updatedAt: new Date()
-        });
-        historyMessage = `Derivación aceptada. Se REABRIÓ el Legajo N° ${caseFile.id} para iniciar nuevo seguimiento.`;
-      } else {
-        // Si ya estaba abierto por otro tema, simplemente se suma
-        historyMessage = `Derivación aceptada. Se asoció al Legajo N° ${caseFile.id} que ya se encuentra activo.`;
-      }
+
+      await ReferralHistoryService.registerHistory({
+        referralId: newReferral.id,
+        action: ReferralActionEnum.CREATED,
+        oldStatus: null,
+        newStatus: ReferralStatusEnum.PENDING,
+        comment: 'Derivación creada por el docente.',
+        changedBy: teacherId
+      });
+
+      return newReferral;
+
+    } catch (error) {
+      throw new Error(`Error creating referral: ${error.message}`);
     }
-
-    // Vinculamos la derivación al legajo correspondiente y cambiamos su estado
-    const updatedReferral = await ReferralRepository.update(referralId, {
-      status: 'Aceptada',
-      caseFileId: caseFile.id
-    });
-
-    // Registramos la acción en el historial con las observaciones de la psicopedagoga
-    await ReferralHistoryService.logStatusChange(
-      referralId, 
-      'Aceptada', 
-      cabinetUserId, 
-      `${historyMessage} Observaciones: ${observations}`
-    );
-
-    return { referral: updatedReferral, caseFileId: caseFile.id };
   }
 
-  // 3. Cuando el gabinete RECHAZA la derivación (por falta de datos o porque no corresponde)
+  async acceptReferral(referralId, cabinetUserId, observations = '') {
+
+    try {
+
+      const referral = await ReferralRepository.getById(referralId);
+
+      if (!referral) {
+        throw new Error('Referral not found.');
+      }
+
+      if (referral.status !== ReferralStatusEnum.PENDING) {
+        throw new Error('Referral has already been processed.');
+      }
+
+      let caseFile = await CaseFileRepository.getOpenByStudentId(
+        referral.studentId
+      );
+
+      if (!caseFile) {
+
+        caseFile = await CaseFileRepository.create({
+          studentId: referral.studentId,
+          referralId: referral.id,
+          subject: `Seguimiento de ${referral.category}`,
+          priority: 'Medium',
+          status: 'Open'
+        });
+      }
+
+      const updatedReferral = await ReferralRepository.update(referralId, {
+        status: ReferralStatusEnum.IN_PROGRESS,
+        reviewedAt: new Date(),
+        reviewedBy: cabinetUserId
+      });
+
+      await ReferralHistoryService.registerHistory({
+        referralId,
+        action: ReferralActionEnum.ACCEPTED,
+        oldStatus: ReferralStatusEnum.PENDING,
+        newStatus: ReferralStatusEnum.IN_PROGRESS,
+        comment: observations,
+        changedBy: cabinetUserId
+      });
+
+      return {
+        referral: updatedReferral,
+        caseFile
+      };
+
+    } catch (error) {
+      throw new Error(`Error accepting referral: ${error.message}`);
+    }
+  }
+
   async rejectReferral(referralId, cabinetUserId, reason) {
-    if (!reason) throw new Error('Es obligatorio justificar el motivo del rechazo.');
 
-    const referral = await ReferralRepository.getById(referralId);
-    if (!referral) throw new Error('La derivación no existe.');
-    if (referral.status !== 'Pendiente') throw new Error('Esta derivación ya fue procesada.');
+    try {
 
-    const updatedReferral = await ReferralRepository.update(referralId, {
-      status: 'Rechazada'
-    });
+      if (!reason) {
+        throw new Error('Rejection reason is required.');
+      }
 
-    // Dejamos constancia del rechazo y el porqué
-    await ReferralHistoryService.logStatusChange(
-      referralId, 
-      'Rechazada', 
-      cabinetUserId, 
-      `Motivo de rechazo: ${reason}`
-    );
+      const referral = await ReferralRepository.getById(referralId);
 
-    return updatedReferral;
+      if (!referral) {
+        throw new Error('Referral not found.');
+      }
+
+      if (referral.status !== ReferralStatusEnum.PENDING) {
+        throw new Error('Referral has already been processed.');
+      }
+
+      const updatedReferral = await ReferralRepository.update(referralId, {
+        status: ReferralStatusEnum.REJECTED,
+        reviewedAt: new Date(),
+        reviewedBy: cabinetUserId
+      });
+
+      await ReferralHistoryService.registerHistory({
+        referralId,
+        action: ReferralActionEnum.REJECTED,
+        oldStatus: ReferralStatusEnum.PENDING,
+        newStatus: ReferralStatusEnum.REJECTED,
+        comment: reason,
+        changedBy: cabinetUserId
+      });
+
+      return updatedReferral;
+
+    } catch (error) {
+      throw new Error(`Error rejecting referral: ${error.message}`);
+    }
+  }
+
+  async requestMoreInfo(referralId, cabinetUserId, comment) {
+
+    try {
+
+      const referral = await ReferralRepository.getById(referralId);
+
+      if (!referral) {
+        throw new Error('Referral not found.');
+      }
+
+      const updatedReferral = await ReferralRepository.update(referralId, {
+        status: ReferralStatusEnum.MORE_INFO
+      });
+
+      await ReferralHistoryService.registerHistory({
+        referralId,
+        action: ReferralActionEnum.MORE_INFO_REQUESTED,
+        oldStatus: referral.status,
+        newStatus: ReferralStatusEnum.MORE_INFO,
+        comment,
+        changedBy: cabinetUserId
+      });
+
+      return updatedReferral;
+
+    } catch (error) {
+      throw new Error(`Error requesting more information: ${error.message}`);
+    }
   }
 }
 

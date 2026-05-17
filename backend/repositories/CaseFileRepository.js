@@ -1,69 +1,155 @@
-import { CaseFile, Student, Referral, Intervention, Course } from '../models/index.js';
+import {
+  CaseFile,
+  Student,
+  Referral,
+  Intervention,
+  Course
+} from '../models/index.js';
+
+import { CaseFileStatus } from '../enums/index.js';
 
 class CaseFileRepository {
-  
-  // 1. Abrir un nuevo legajo (cuando el gabinete acepta una derivación)
+
   async create(caseFileData) {
-    return await CaseFile.create(caseFileData);
+
+    try {
+
+      return await CaseFile.create(caseFileData);
+
+    } catch (error) {
+      throw new Error(`Error creating case file: ${error.message}`);
+    }
   }
 
-  // 2. Traer un legajo COMPLETO con toda la información histórica
+  async getById(id) {
+
+    try {
+
+      return await CaseFile.findByPk(id);
+
+    } catch (error) {
+      throw new Error(`Error fetching case file: ${error.message}`);
+    }
+  }
+
   async getFullHistoryById(id) {
-    return await CaseFile.findByPk(id, {
-      include: [
-        { 
-          model: Student, 
-          attributes: ['id', 'firstName', 'lastName', 'birthDate'],
-          include: [{ model: Course, attributes: ['level', 'grade', 'division'] }]
-        },
-        { 
-          model: Referral, 
-          attributes: ['id', 'category', 'description', 'status'] 
-        },
-        { 
-          model: Intervention,
-          // Ordenamos las intervenciones de la más nueva a la más vieja
-          separate: true, 
-          order: [['interventionDate', 'DESC']]
-        }
-      ]
-    });
+
+    try {
+
+      return await CaseFile.findByPk(id, {
+        include: [
+          {
+            model: Student,
+            attributes: [
+              'id',
+              'firstName',
+              'lastName',
+              'birthDate'
+            ],
+            include: [
+              {
+                model: Course,
+                attributes: ['level', 'grade', 'division']
+              }
+            ]
+          },
+
+          {
+            model: Referral,
+            attributes: [
+              'id',
+              'category',
+              'description',
+              'status'
+            ]
+          },
+
+          {
+            model: Intervention,
+            separate: true,
+            order: [['createdAt', 'DESC']]
+          }
+        ]
+      });
+
+    } catch (error) {
+      throw new Error(`Error fetching case file history: ${error.message}`);
+    }
   }
 
-  // 3. Traer todos los legajistas abiertos (para el panel de control del gabinete)
   async getAllOpen() {
-    return await CaseFile.findAll({
-      where: { status: 'Abierto' }, // Usando el valor de su CaseFileStatus enum
-      include: [
-        { model: Student, attributes: ['id', 'firstName', 'lastName'] }
-      ],
-      order: [['priority', 'ASC'], ['updatedAt', 'DESC']] // Primero los de prioridad Alta
-    });
+
+    try {
+
+      return await CaseFile.findAll({
+        where: {
+          status: CaseFileStatus.OPEN
+        },
+
+        include: [
+          {
+            model: Student,
+            attributes: ['id', 'firstName', 'lastName']
+          }
+        ],
+
+        order: [
+          ['priority', 'DESC'],
+          ['updatedAt', 'DESC']
+        ]
+      });
+
+    } catch (error) {
+      throw new Error(`Error fetching open case files: ${error.message}`);
+    }
   }
 
-  // 4. Buscar si un estudiante ya tiene un legajo abierto
-  // Evita que abran dos carpetas para el mismo alumno al mismo tiempo
   async getOpenByStudentId(studentId) {
-    return await CaseFile.findOne({
-      where: { 
-        studentId, 
-        status: 'Abierto' 
-      }
-    });
+
+    try {
+
+      return await CaseFile.findOne({
+        where: {
+          studentId,
+          status: CaseFileStatus.OPEN
+        }
+      });
+
+    } catch (error) {
+      throw new Error(`Error fetching student case file: ${error.message}`);
+    }
   }
 
-  // 5. Actualizar el legajo (por ejemplo, cambiar la prioridad de Media a Alta)
   async update(id, updateData) {
-    const caseFile = await CaseFile.findByPk(id);
-    if (!caseFile) return null;
-    return await caseFile.update(updateData);
+
+    try {
+
+      const caseFile = await CaseFile.findByPk(id);
+
+      if (!caseFile) return null;
+
+      return await caseFile.update(updateData);
+
+    } catch (error) {
+      throw new Error(`Error updating case file: ${error.message}`);
+    }
   }
 
-  // 6. Cerrar el legajo (cuando se finaliza el acompañamiento del alumno)
   async closeCase(id) {
-    const caseFile = await CaseFile.findByPk(id);
-    if (!caseFile) return null;
-    return await caseFile.update({ status: 'Cerrado' });
+
+    try {
+
+      const caseFile = await CaseFile.findByPk(id);
+
+      if (!caseFile) return null;
+
+      return await caseFile.update({
+        status: CaseFileStatus.CLOSED
+      });
+
+    } catch (error) {
+      throw new Error(`Error closing case file: ${error.message}`);
+    }
   }
 }
 

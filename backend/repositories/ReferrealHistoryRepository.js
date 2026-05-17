@@ -1,57 +1,54 @@
-import ReferralHistory from '../models/ReferralHistory.js'
+import { ReferralHistory, User } from '../models/index.js';
 
-class ReferralRepository {
+class ReferralHistoryRepository {
 
-    async saveReferralHistory(referralData) {
-        try {
-            return await ReferralHistory.create(referralData);
-        } catch (error) {
-            console.log('Save Error: ', error);
-        }
-    } 
-
-    async findAllReferralHistories(){
-        try {
-            const PAGE_LIMIT = 10;
-        const DEFAULT_PAGE = 1;
-
-        const offset = (DEFAULT_PAGE - 1) * PAGE_LIMIT;
-        
-        return await ReferralHistory.findAndCountAll({
-            limit: PAGE_LIMIT,
-            offset: offset,
-            order: [['createdAt', 'DESC']],
-        });
-        } catch (error) {
-            console.log('Find Error: ', error);
-        }      
+  async create(historyData) {
+    try {
+      return await ReferralHistory.create(historyData);
+    } catch (error) {
+      throw new Error(`Error creating referral history: ${error.message}`);
     }
+  }
 
-    async findReferralHistoryById(id) {
-        try {
-            return await ReferralHistory.findByPk(id);    
-        } catch (error) {
-            console.log('Find Error: ', error);
-        }       
+  async getByReferralId(referralId) {
+    try {
+      return await ReferralHistory.findAll({
+        where: { referralId },
+        include: [
+          {
+            model: User,
+            attributes: ['id', 'firstName', 'lastName']
+          }
+        ],
+        order: [['createdAt', 'ASC']]
+      });
+    } catch (error) {
+      throw new Error(`Error fetching referral history: ${error.message}`);
     }
+  }
 
-    async updateReferralHistory(id, data) {
-        try {
-            const referralHistory = await this.findById(id);
-        if (!referralHistory) return null;
-
-        return await ReferralHistory.update(data);
-        } catch (error) {
-            console.log('Update Error: ', error);
-        }     
+  async getById(id) {
+    try {
+      return await ReferralHistory.findByPk(id);
+    } catch (error) {
+      throw new Error(`Error fetching referral history item: ${error.message}`);
     }
+  }
 
-    async deleteReferralHistory(id) {
-        try {
-            const deleted = await ReferralHistory.destroy({ where: { id } });
-        return deleted > 0;
-        } catch (error) {
-            console.log('Delete Error: ', error);
-        }
+  async delete(id) {
+    try {
+      const history = await ReferralHistory.findByPk(id);
+
+      if (!history) return false;
+
+      await history.destroy();
+
+      return true;
+
+    } catch (error) {
+      throw new Error(`Error deleting referral history: ${error.message}`);
     }
+  }
 }
+
+export default new ReferralHistoryRepository();

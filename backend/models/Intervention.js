@@ -16,7 +16,7 @@ const Intervention = sequelize.define('Intervention', {
   },
 
   type: {
-    type: DataTypes.ENUM(...Object.values(InterventionTypes)), // Dinámico y blindado
+    type: DataTypes.ENUM(...Object.values(InterventionTypes)),
     allowNull: false
   },
 
@@ -31,6 +31,18 @@ const Intervention = sequelize.define('Intervention', {
 
   outcome: {
     type: DataTypes.TEXT
+  },
+
+  // Legajo asociado
+  caseFileId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+
+  // Profesional responsable
+  professionalId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
   }
 
 }, {

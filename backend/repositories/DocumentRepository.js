@@ -1,40 +1,78 @@
-import { Document, Student, Intervention, User } from '../models/index.js';
+import { Document } from '../models/index.js';
 
 class DocumentRepository {
 
-  // 1. Registrar un nuevo documento (cuando suben un archivo)
+  // Crear documento
   async create(documentData) {
-    return await Document.create(documentData);
+    try {
+      return await Document.create(documentData);
+    } catch (error) {
+      throw new Error(`Error creating document: ${error.message}`);
+    }
   }
 
-  // 2. Buscar un documento específico por su ID (útil para cuando lo quieren descargar)
+  // Buscar documento por ID
   async getById(id) {
-    return await Document.findByPk(id);
+    try {
+      return await Document.findByPk(id);
+    } catch (error) {
+      throw new Error(`Error fetching document: ${error.message}`);
+    }
   }
 
-  // 3. Traer todos los documentos de la carpeta de un alumno
+  // Obtener todos los documentos de un estudiante
   async getByStudentId(studentId) {
-    return await Document.findAll({
-      where: { studentId },
-      order: [['createdAt', 'DESC']] // Los más nuevos arriba
-    });
+    try {
+
+      return await Document.findAll({
+        where: { studentId },
+        order: [['createdAt', 'DESC']]
+      });
+    } catch (error) {
+      throw new Error(`Error fetching student documents: ${error.message}`);
+    }
   }
 
-  // 4. Traer los documentos adjuntos a una intervención específica
+  // Obtener documentos vinculados a una intervención
   async getByInterventionId(interventionId) {
-    return await Document.findAll({
-      where: { interventionId },
-      order: [['createdAt', 'DESC']]
-    });
+    try {
+      return await Document.findAll({
+        where: { interventionId },
+        order: [['createdAt', 'DESC']]
+      });
+    } catch (error) {
+      throw new Error(`Error fetching intervention documents: ${error.message}`);
+    }
   }
 
-  // 5. Eliminar un documento del sistema (Borrado físico o lógico)
-  // Nota: Generalmente en escuelas se borra el registro de la BD si se equivocaron de archivo
+  // Actualizar documento
+  async update(id, updateData) {
+    try {
+
+      const document = await Document.findByPk(id);
+      if (!document) {
+        return null;
+      }
+      return await document.update(updateData);
+    } catch (error) {
+      throw new Error(`Error updating document: ${error.message}`);
+    }
+  }
+
+  // Eliminar documento
   async delete(id) {
-    const document = await Document.findByPk(id);
-    if (!document) return false;
-    await document.destroy();
-    return true;
+    try {
+
+      const document = await Document.findByPk(id);
+      if (!document) {
+        return false;
+      }
+
+      await document.destroy();
+      return true;
+    } catch (error) {
+      throw new Error(`Error deleting document: ${error.message}`);
+    }
   }
 }
 

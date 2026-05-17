@@ -1,57 +1,54 @@
-import ReferralMessage from '../models/ReferralMessage.js'
+import { ReferralMessage, User } from '../models/index.js';
 
 class ReferralMessageRepository {
 
-    async saveReferralMessage(referralData) {
-        try {
-            return await ReferralMessage.create(referralData);
-        } catch (error) {
-            console.log('Save Error: ', error);
-        }
-    } 
-
-    async findAllReferralMessages(){
-        try {
-            const PAGE_LIMIT = 10;
-        const DEFAULT_PAGE = 1;
-
-        const offset = (DEFAULT_PAGE - 1) * PAGE_LIMIT;
-        
-        return await ReferralMessage.findAndCountAll({
-            limit: PAGE_LIMIT,
-            offset: offset,
-            order: [['createdAt', 'DESC']],
-        });
-        } catch (error) {
-            console.log('Find Error: ', error);
-        }      
+  async create(messageData) {
+    try {
+      return await ReferralMessage.create(messageData);
+    } catch (error) {
+      throw new Error(`Error creating referral message: ${error.message}`);
     }
+  }
 
-    async findReferralMessageById(id) {
-        try {
-            return await ReferralMessage.findByPk(id);    
-        } catch (error) {
-            console.log('Find Error: ', error);
-        }       
+  async getByReferralId(referralId) {
+    try {
+      return await ReferralMessage.findAll({
+        where: { referralId },
+        include: [
+          {
+            model: User,
+            attributes: ['id', 'firstName', 'lastName']
+          }
+        ],
+        order: [['createdAt', 'ASC']]
+      });
+    } catch (error) {
+      throw new Error(`Error fetching referral messages: ${error.message}`);
     }
+  }
 
-    async updateReferral(id, data) {
-        try {
-            const referralMessage = await this.findById(id);
-        if (!referralMessage) return null;
-
-        return await ReferralMessage.update(data);
-        } catch (error) {
-            console.log('Update Error: ', error);
-        }     
+  async getById(id) {
+    try {
+      return await ReferralMessage.findByPk(id);
+    } catch (error) {
+      throw new Error(`Error fetching referral message: ${error.message}`);
     }
+  }
 
-    async deleteReferral(id) {
-        try {
-            const deleted = await ReferralMessage.destroy({ where: { id } });
-        return deleted > 0;
-        } catch (error) {
-            console.log('Delete Error: ', error);
-        }
+  async delete(id) {
+    try {
+      const message = await ReferralMessage.findByPk(id);
+
+      if (!message) return false;
+
+      await message.destroy();
+
+      return true;
+
+    } catch (error) {
+      throw new Error(`Error deleting referral message: ${error.message}`);
     }
+  }
 }
+
+export default new ReferralMessageRepository();

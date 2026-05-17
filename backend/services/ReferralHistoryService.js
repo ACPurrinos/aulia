@@ -1,20 +1,41 @@
-import ReferralHistoryRepository from '../repositories/ReferrealHistoryRepository';
+import ReferralHistoryRepository from '../repositories/ReferralHistoryRepository.js';
 
 class ReferralHistoryService {
-  // Registrar un cambio de estado en la línea de tiempo
-  async logStatusChange(referralId, status, userId, notes = '') {
-    return await ReferralHistoryRepository.create({
-      referralId,
-      status,
-      changedBy: userId, // ID del usuario que opera (docente, gabinete, etc.)
-      notes,
-      changeDate: new Date()
-    });
+
+  async registerHistory({
+    referralId,
+    action,
+    oldStatus,
+    newStatus,
+    comment,
+    changedBy
+  }) {
+
+    try {
+
+      return await ReferralHistoryRepository.create({
+        referralId,
+        action,
+        oldStatus,
+        newStatus,
+        comment,
+        changedBy
+      });
+
+    } catch (error) {
+      throw new Error(`Error registering referral history: ${error.message}`);
+    }
   }
 
-  // Consultar el historial completo de una derivación puntual
-  async getHistoryByReferral(referralId) {
-    return await ReferralHistoryRepository.getByReferralId(referralId);
+  async getReferralTimeline(referralId) {
+
+    try {
+
+      return await ReferralHistoryRepository.getByReferralId(referralId);
+
+    } catch (error) {
+      throw new Error(`Error fetching referral timeline: ${error.message}`);
+    }
   }
 }
 

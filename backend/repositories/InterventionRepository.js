@@ -1,72 +1,139 @@
-import { Intervention, CaseFile, Student, User, Document, Alert } from '../models/index.js';
+import {
+  Intervention,
+  CaseFile,
+  Student,
+  User,
+  Document
+} from '../models/index.js';
 
 class InterventionRepository {
 
-  // 1. Registrar una nueva intervención del gabinete
+  // Crear intervención
   async create(interventionData) {
-    return await Intervention.create(interventionData);
+    try {
+
+      return await Intervention.create(interventionData);
+
+    } catch (error) {
+
+      throw new Error(`Error creating intervention: ${error.message}`);
+    }
   }
 
-  // 2. Buscar una intervención específica con todo su detalle
-  // (Útil si la psicopedagoga quiere ver el acta/informe detallado de una reunión puntual)
+  // Buscar por ID con relaciones
   async getById(id) {
-    return await Intervention.findByPk(id, {
-      include: [
-        { 
-          model: User, 
-          attributes: ['id', 'firstName', 'lastName'] // El profesional que intervino
-        },
-        { 
-          model: Document, 
-          attributes: ['id', 'name', 'fileUrl'] // Los informes o actas firmadas adjuntas
-        },
-        {
-          model: Alert,
-          attributes: ['id', 'type', 'description'] // Alertas asociadas a esta acción
-        }
-      ]
-    });
+    try {
+
+      return await Intervention.findByPk(id, {
+        include: [
+          {
+            model: User,
+            attributes: ['id', 'firstName', 'lastName']
+          },
+          {
+            model: Document
+          },
+          {
+            model: CaseFile,
+            include: [
+              {
+                model: Student,
+                attributes: ['id', 'firstName', 'lastName']
+              }
+            ]
+          }
+        ]
+      });
+
+    } catch (error) {
+
+      throw new Error(`Error fetching intervention: ${error.message}`);
+    }
   }
 
-  // 3. Traer todas las intervenciones realizadas dentro de un legajo (orden cronológico)
+  // Intervenciones de un legajo
   async getByCaseFileId(caseFileId) {
-    return await Intervention.findAll({
-      where: { caseFileId },
-      include: [
-        { model: User, attributes: ['id', 'firstName', 'lastName'] }
-      ],
-      order: [['interventionDate', 'DESC'], ['createdAt', 'DESC']] // Las más recientes primero
-    });
+    try {
+
+      return await Intervention.findAll({
+        where: { caseFileId },
+        include: [
+          {
+            model: User,
+            attributes: ['id', 'firstName', 'lastName']
+          }
+        ],
+        order: [['interventionDate', 'DESC']]
+      });
+
+    } catch (error) {
+
+      throw new Error(`Error fetching case interventions: ${error.message}`);
+    }
   }
 
-  // 4. Traer las intervenciones hechas por un profesional específico
-  // (Sirve para que cada psicopedagoga vea su propia agenda o bitácora de trabajo)
+  // Intervenciones de un profesional
   async getByProfessionalId(professionalId) {
-    return await Intervention.findAll({
-      where: { professionalId },
-      include: [
-        { 
-          model: CaseFile, 
-          include: [{ model: Student, attributes: ['id', 'firstName', 'lastName'] }] 
-        }
-      ],
-      order: [['interventionDate', 'DESC']]
-    });
+    try {
+
+      return await Intervention.findAll({
+        where: { professionalId },
+        include: [
+          {
+            model: CaseFile,
+            include: [
+              {
+                model: Student,
+                attributes: ['id', 'firstName', 'lastName']
+              }
+            ]
+          }
+        ],
+        order: [['interventionDate', 'DESC']]
+      });
+
+    } catch (error) {
+
+      throw new Error(`Error fetching professional interventions: ${error.message}`);
+    }
   }
 
-  // 5. Modificar una intervención (por ejemplo, ampliar la descripción o conclusiones del acta)
+  // Actualizar
   async update(id, updateData) {
-    const intervention = await Intervention.findByPk(id);
-    if (!intervention) return null;
-    return await intervention.update(updateData);
+    try {
+
+      const intervention = await Intervention.findByPk(id);
+
+      if (!intervention) {
+        return null;
+      }
+
+      return await intervention.update(updateData);
+
+    } catch (error) {
+
+      throw new Error(`Error updating intervention: ${error.message}`);
+    }
   }
 
-  // 6. Eliminar un registro de intervención
+  // Eliminar
   async delete(id) {
-    const intervention = await Intervention.findByPk(id);
-    if (!intervention) return false;
-    await intervention.destroy();
-    return true;
+    try {
+
+      const intervention = await Intervention.findByPk(id);
+
+      if (!intervention) {
+        return false;
+      }
+
+      await intervention.destroy();
+
+      return true;
+
+    } catch (error) {
+
+      throw new Error(`Error deleting intervention: ${error.message}`);
+    }
   }
 }
 
