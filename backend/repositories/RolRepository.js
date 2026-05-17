@@ -1,23 +1,23 @@
-import Rol from '../models/Rol.js'
+import Role from '../models/Role.js'
 
 class RolRepository {
 
     async saveRol(RolData) {
         try {
-            return await Rol.create(RolData);
+            return await Role.create(RolData);
         } catch (error) {
             console.log('Save Error: ', error);
         }
     } 
 
-    async findAllRols(){
+    async findAllRoles(){
         try {
             const PAGE_LIMIT = 10;
         const DEFAULT_PAGE = 1;
 
         const offset = (DEFAULT_PAGE - 1) * PAGE_LIMIT;
         
-        return await Rol.findAndCountAll({
+        return await Role.findAndCountAll({
             limit: PAGE_LIMIT,
             offset: offset,
             order: [['createdAt', 'DESC']],
@@ -29,18 +29,32 @@ class RolRepository {
 
     async findRolById(id) {
         try {
-            return await Rol.findByPk(id);    
+            return await Role.findByPk(id);    
         } catch (error) {
             console.log('Find Error: ', error);
         }       
     }
 
+    async findByName(name){
+        try {
+            Role.findOne(
+                {where: {
+                name: name
+                }
+            })
+        } catch (error) {
+            console.log('Find name Error: ', error);
+        }
+    }
+
     async updateRol(id, data) {
         try {
-            const rol = await this.findById(id);
+            const rol = await this.findRolById(id);
         if (!rol) return null;
 
-        return await Rol.update(data);
+        const [rowsAffected] = await Role.update(data, { where: { id }});
+        if (rowsAffected === 0) throw new Error('Update error');
+        return await this.findRolById(id);
         } catch (error) {
             console.log('Update Error: ', error);
         }     
@@ -48,7 +62,7 @@ class RolRepository {
 
     async deleteRol(id) {
         try {
-            const deleted = await Rol.destroy({ where: { id } });
+            const deleted = await Role.destroy({ where: { id } });
         return deleted > 0;
         } catch (error) {
             console.log('Delete Error: ', error);
@@ -56,6 +70,6 @@ class RolRepository {
     }
 }
 
-
+export default new RolRepository();
 
 

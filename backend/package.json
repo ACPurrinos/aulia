@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "pg": "^8.20.0",
@@ -22,7 +23,7 @@
   "devDependencies": {
     "nodemon": "^3.1.14"
   },
-  "overrides": { 
-    "uuid": "^14.0.0" 
+  "overrides": {
+    "uuid": "^14.0.0"
   }
 }

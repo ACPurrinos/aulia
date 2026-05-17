@@ -35,12 +35,46 @@ class UserRepository {
         }       
     }
 
+    async findUserByIdWithPassword (id){
+        try {
+            return await User.scope('withPassword').findByPk(id);
+        } catch (error) {
+            console.log('Find with password Error: ', error);
+        }
+    };
+
+    async findByUsername(username){
+        try {
+            return await User.findOne(
+                {where: {
+                username: username
+                }
+            })
+        } catch (error) {
+            console.log('Find username Error: ', error);
+        }
+    }
+
+    async findByEmail(email){
+        try {
+            return await User.findOne(
+                {where: {
+                email: email
+                }
+            })
+        } catch (error) {
+            console.log('Find email Error: ', error);
+        }
+    }
+
     async updateUser(id, data) {
         try {
-            const user = await this.findById(id);
+            const user = await this.findUserById(id);
         if (!user) return null;
-
-        return await User.update(data);
+        
+        const [rowsAffected] = await User.update(data, { where: { id }});
+        if (rowsAffected === 0) throw new Error('Update error');
+        return await this.findUserById(id);
         } catch (error) {
             console.log('Update Error: ', error);
         }     
@@ -55,3 +89,5 @@ class UserRepository {
         }
     }
 }
+
+export default new UserRepository();

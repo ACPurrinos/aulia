@@ -30,7 +30,6 @@ const User = sequelize.define('User', {
   password: {
     type: DataTypes.STRING,
     allowNull: false
-    // Nota: Aquí guardarás el hash de bcrypt, no el texto plano
   },
   active: {
     type: DataTypes.BOOLEAN,

@@ -37,10 +37,12 @@ class StudentRepository {
 
     async updateStudent(id, data) {
         try {
-            const student = await this.findById(id);
+            const student = await this.findStudentById(id,{ where: { id }});
         if (!student) return null;
 
-        return await Student.update(data);
+        const [rowsAffected] = await Student.update(data, { where: { id }});
+        if (rowsAffected === 0) throw new Error('Update error');
+        return await this.findStudentById(id);
         } catch (error) {
             console.log('Update Error: ', error);
         }     
@@ -55,3 +57,5 @@ class StudentRepository {
         }
     }
 }
+
+export default new StudentRepository();

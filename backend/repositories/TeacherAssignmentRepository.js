@@ -37,10 +37,12 @@ class TeacherAssignmentRepository {
 
     async updateTeacherAssignment(id, data) {
         try {
-            const teacher = await this.findById(id);
+            const teacher = await this.findTeacherAssignmentById(id);
         if (!teacher) return null;
 
-        return await TeacherAssignment.update(data);
+        const [rowsAffected] = await TeacherAssignment.update(data, { where: { id }});
+        if (rowsAffected === 0) throw new Error('Update error');
+        return await this.findTeacherAssignmentById(id);
         } catch (error) {
             console.log('Update Error: ', error);
         }     
