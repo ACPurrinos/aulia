@@ -56,150 +56,111 @@ Student.hasMany(Alert, { foreignKey: 'studentId' });
 Alert.belongsTo(Student, { foreignKey: 'studentId' });
 
 // --- GABINETE (DERIVACIONES E INTERVENCIONES) ---
-// ReferrerId es el Docente/Preceptor que inicia la derivación
-User.hasMany(Referral, { foreignKey: 'referrerId', as: 'SubmittedReferrals' }); // Alias agregado
-Referral.belongsTo(User, { foreignKey: 'referrerId', as: 'Referrer' });        // Alias agregado
+User.hasMany(Referral, { foreignKey: 'referrerId', as: 'submittedReferrals' });
+Referral.belongsTo(User, { foreignKey: 'referrerId', as: 'referrer' });        
+
+User.hasMany(Referral, { foreignKey: 'reviewedBy', as: 'reviewedReferrals' });
+Referral.belongsTo(User, { foreignKey: 'reviewedBy', as: 'reviewer' });
 
 Student.hasMany(Referral, { foreignKey: 'studentId' });
 Referral.belongsTo(Student, { foreignKey: 'studentId' });
 
-// Legajo y Actuaciones
-Student.hasMany(CaseFile, { foreignKey: 'studentId' });
-CaseFile.belongsTo(Student, { foreignKey: 'studentId' });
+// Legajo y Actuaciones (Relación bidireccional unificada)
+
+CaseFile.hasMany(Referral, { foreignKey: 'caseFileId' });
+Referral.belongsTo(CaseFile, { foreignKey: 'caseFileId' });
+
+Student.hasOne(CaseFile, {foreignKey: 'studentId'});
+CaseFile.belongsTo(Student, {foreignKey: 'studentId'});
 
 CaseFile.hasMany(Intervention, { foreignKey: 'caseFileId' });
 Intervention.belongsTo(CaseFile, { foreignKey: 'caseFileId' });
 
-// ProfessionalId es el miembro del gabinete que hace la intervención
-User.hasMany(Intervention, { foreignKey: 'professionalId' });
-Intervention.belongsTo(User, { foreignKey: 'professionalId' });
+User.hasMany(Intervention, {
+  foreignKey: 'professionalId',
+  as: 'interventions'
+});
 
-// Un estudiante tiene muchos documentos (su carpeta completa)
+Intervention.belongsTo(User, {
+  foreignKey: 'professionalId',
+  as: 'professional'
+});
+
+// Documentación de Alumnos e Intervenciones
 Student.hasMany(Document, { foreignKey: 'studentId' });
 Document.belongsTo(Student, { foreignKey: 'studentId' });
 
-// Una intervención puede tener documentos adjuntos (informes, tests)
 Intervention.hasMany(Document, { foreignKey: 'interventionId' });
 Document.belongsTo(Intervention, { foreignKey: 'interventionId' });
 
 // =========================
-// NOTIFICATIONS
-// =========================
-
-User.hasMany(Notification, {
-  foreignKey: 'userId'
-});
-
-Notification.belongsTo(User, {
-  foreignKey: 'userId'
-});
-
-// =========================
 // REFERRAL HISTORY
 // =========================
+Referral.hasMany(ReferralHistory, { foreignKey: 'referralId' });
+ReferralHistory.belongsTo(Referral, { foreignKey: 'referralId' });
 
-Referral.hasMany(ReferralHistory, {
-  foreignKey: 'referralId'
+User.hasMany(ReferralHistory, {foreignKey: 'changedBy', as: 'historyChanges'});
+ReferralHistory.belongsTo(User, {foreignKey: 'changedBy', as: 'changedByUser'});
+
+// =========================
+// REFERRAL MESSAGES (CHAT)
+// =========================
+Referral.hasMany(ReferralMessage, { foreignKey: 'referralId' });
+ReferralMessage.belongsTo(Referral, { foreignKey: 'referralId' });
+
+User.hasMany(ReferralMessage, {
+  foreignKey: 'userId',
+  as: 'messages'
 });
 
-ReferralHistory.belongsTo(Referral, {
-  foreignKey: 'referralId'
-});
-
-User.hasMany(ReferralHistory, {
-  foreignKey: 'changedBy'
-});
-
-ReferralHistory.belongsTo(User, {
-  foreignKey: 'changedBy'
+ReferralMessage.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'sender'
 });
 
 // =========================
-// REFERRAL MESSAGES
+// NOTIFICATIONS
 // =========================
-
-Referral.hasMany(ReferralMessage, {
-  foreignKey: 'referralId'
-});
-
-ReferralMessage.belongsTo(Referral, {
-  foreignKey: 'referralId'
-});
-
-// El usuario (persona) que redactó el mensaje dentro de la derivación
-User.hasMany(ReferralMessage, { foreignKey: 'senderId' });
-ReferralMessage.belongsTo(User, { foreignKey: 'senderId', as: 'Sender' });
-
+User.hasMany(Notification, { foreignKey: 'userId' });
+Notification.belongsTo(User, { foreignKey: 'userId' });
 
 // =========================
 // TEACHER ASSIGNMENTS
 // =========================
+User.hasMany(TeacherAssignment, { foreignKey: 'teacherId' });
+TeacherAssignment.belongsTo(User, { foreignKey: 'teacherId' });
 
-// Un docente tiene muchas asignaciones
-User.hasMany(TeacherAssignment, {
-  foreignKey: 'teacherId'
-});
+Course.hasMany(TeacherAssignment, { foreignKey: 'courseId' });
+TeacherAssignment.belongsTo(Course, { foreignKey: 'courseId' });
 
-TeacherAssignment.belongsTo(User, {
-  foreignKey: 'teacherId'
-});
-
-// Un curso tiene muchas asignaciones
-Course.hasMany(TeacherAssignment, {
-  foreignKey: 'courseId'
-});
-
-TeacherAssignment.belongsTo(Course, {
-  foreignKey: 'courseId'
-});
-
-// Una materia tiene muchas asignaciones
-Subject.hasMany(TeacherAssignment, {
-  foreignKey: 'subjectId'
-});
-
-TeacherAssignment.belongsTo(Subject, {
-  foreignKey: 'subjectId'
-});
-
-User.hasMany(Referral, {
-  foreignKey: 'reviewedBy',
-  as: 'ReviewedReferrals'
-});
-
-Referral.belongsTo(User, {
-  foreignKey: 'reviewedBy',
-  as: 'Reviewer'
-});
-
-Referral.hasOne(CaseFile, {
-  foreignKey: 'referralId'
-});
-
-CaseFile.belongsTo(Referral, {
-  foreignKey: 'referralId'
-});
+Subject.hasMany(TeacherAssignment, { foreignKey: 'subjectId' });
+TeacherAssignment.belongsTo(Subject, { foreignKey: 'subjectId' });
 
 // =========================
 // ALERTS
 // =========================
-
-
-// Una derivación puede generar una alerta (o ninguna)
-Referral.hasOne(Alert, { foreignKey: 'referralId' });
+Referral.hasMany(Alert, { foreignKey: 'referralId' });
 Alert.belongsTo(Referral, { foreignKey: 'referralId' });
 
-// El usuario (Docente/Gabinete) que detecta y carga la alerta manualmente
-User.hasMany(Alert, { foreignKey: 'createdById', as: 'CreatedAlerts' });
-Alert.belongsTo(User, { foreignKey: 'createdById', as: 'Creator' });
+User.hasMany(Alert, { foreignKey: 'createdById', as: 'createdAlerts' });
+Alert.belongsTo(User, { foreignKey: 'createdById', as: 'creator' });
 
-// Para filtrar alertas por curso rápidamente
 Course.hasMany(Alert, { foreignKey: 'courseId' });
 Alert.belongsTo(Course, { foreignKey: 'courseId' });
 
-// Para saber qué acción del gabinete dio respuesta a esta alerta
 Intervention.hasMany(Alert, { foreignKey: 'interventionId' });
 Alert.belongsTo(Intervention, { foreignKey: 'interventionId' });
+
+User.hasMany(Document, {
+  foreignKey: 'uploadedBy',
+  as: 'uploadedDocuments'
+});
+
+Document.belongsTo(User, {
+  foreignKey: 'uploadedBy',
+  as: 'uploadedByUser'
+});
+
 
 export {
   sequelize,

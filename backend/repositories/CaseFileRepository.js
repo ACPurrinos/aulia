@@ -1,12 +1,15 @@
 import {
   CaseFile,
   Student,
+  Course,
   Referral,
   Intervention,
-  Course
+  User
 } from '../models/index.js';
 
-import { CaseFileStatus } from '../enums/index.js';
+import {
+  CaseFileStatus
+} from '../enums/index.js';
 
 class CaseFileRepository {
 
@@ -17,7 +20,10 @@ class CaseFileRepository {
       return await CaseFile.create(caseFileData);
 
     } catch (error) {
-      throw new Error(`Error creating case file: ${error.message}`);
+
+      throw new Error(
+        `Error creating case file: ${error.message}`
+      );
     }
   }
 
@@ -28,7 +34,26 @@ class CaseFileRepository {
       return await CaseFile.findByPk(id);
 
     } catch (error) {
-      throw new Error(`Error fetching case file: ${error.message}`);
+
+      throw new Error(
+        `Error fetching case file: ${error.message}`
+      );
+    }
+  }
+
+  async getByStudentId(studentId) {
+
+    try {
+
+      return await CaseFile.findOne({
+        where: { studentId }
+      });
+
+    } catch (error) {
+
+      throw new Error(
+        `Error fetching student case file: ${error.message}`
+      );
     }
   }
 
@@ -37,7 +62,9 @@ class CaseFileRepository {
     try {
 
       return await CaseFile.findByPk(id, {
+
         include: [
+
           {
             model: Student,
             attributes: [
@@ -46,34 +73,50 @@ class CaseFileRepository {
               'lastName',
               'birthDate'
             ],
+
             include: [
               {
                 model: Course,
-                attributes: ['level', 'grade', 'division']
+                attributes: [
+                  'id',
+                  'level',
+                  'grade',
+                  'division'
+                ]
               }
             ]
           },
 
           {
-            model: Referral,
-            attributes: [
-              'id',
-              'category',
-              'description',
-              'status'
-            ]
-          },
-
-          {
             model: Intervention,
+
+            include: [
+              {
+                model: User,
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
+              }
+            ],
+
             separate: true,
-            order: [['createdAt', 'DESC']]
+
+            order: [
+              ['interventionDate', 'DESC']
+            ]
           }
+
         ]
+
       });
 
     } catch (error) {
-      throw new Error(`Error fetching case file history: ${error.message}`);
+
+      throw new Error(
+        `Error fetching case file history: ${error.message}`
+      );
     }
   }
 
@@ -82,6 +125,7 @@ class CaseFileRepository {
     try {
 
       return await CaseFile.findAll({
+
         where: {
           status: CaseFileStatus.OPEN
         },
@@ -89,34 +133,25 @@ class CaseFileRepository {
         include: [
           {
             model: Student,
-            attributes: ['id', 'firstName', 'lastName']
+            attributes: [
+              'id',
+              'firstName',
+              'lastName'
+            ]
           }
         ],
 
         order: [
-          ['priority', 'DESC'],
           ['updatedAt', 'DESC']
         ]
+
       });
 
     } catch (error) {
-      throw new Error(`Error fetching open case files: ${error.message}`);
-    }
-  }
 
-  async getOpenByStudentId(studentId) {
-
-    try {
-
-      return await CaseFile.findOne({
-        where: {
-          studentId,
-          status: CaseFileStatus.OPEN
-        }
-      });
-
-    } catch (error) {
-      throw new Error(`Error fetching student case file: ${error.message}`);
+      throw new Error(
+        `Error fetching open case files: ${error.message}`
+      );
     }
   }
 
@@ -124,31 +159,43 @@ class CaseFileRepository {
 
     try {
 
-      const caseFile = await CaseFile.findByPk(id);
+      const caseFile =
+        await CaseFile.findByPk(id);
 
-      if (!caseFile) return null;
+      if (!caseFile) {
+        return null;
+      }
 
       return await caseFile.update(updateData);
 
     } catch (error) {
-      throw new Error(`Error updating case file: ${error.message}`);
+
+      throw new Error(
+        `Error updating case file: ${error.message}`
+      );
     }
   }
 
-  async closeCase(id) {
+  async delete(id) {
 
     try {
 
-      const caseFile = await CaseFile.findByPk(id);
+      const caseFile =
+        await CaseFile.findByPk(id);
 
-      if (!caseFile) return null;
+      if (!caseFile) {
+        return false;
+      }
 
-      return await caseFile.update({
-        status: CaseFileStatus.CLOSED
-      });
+      await caseFile.destroy();
+
+      return true;
 
     } catch (error) {
-      throw new Error(`Error closing case file: ${error.message}`);
+
+      throw new Error(
+        `Error deleting case file: ${error.message}`
+      );
     }
   }
 }

@@ -1,4 +1,7 @@
-import { ReferralMessage, User } from '../models/index.js';
+import {
+  ReferralMessage,
+  User
+} from '../models/index.js';
 
 class ReferralMessageRepository {
 
@@ -6,24 +9,35 @@ class ReferralMessageRepository {
     try {
       return await ReferralMessage.create(messageData);
     } catch (error) {
-      throw new Error(`Error creating referral message: ${error.message}`);
+      throw new Error(
+        `Error creating referral message: ${error.message}`
+      );
     }
   }
 
   async getByReferralId(referralId) {
+
     try {
       return await ReferralMessage.findAll({
         where: { referralId },
         include: [
           {
             model: User,
-            attributes: ['id', 'firstName', 'lastName']
+            as: 'sender',
+            attributes: [
+              'id',
+              'firstName',
+              'lastName',
+              'role'
+            ]
           }
         ],
         order: [['createdAt', 'ASC']]
       });
     } catch (error) {
-      throw new Error(`Error fetching referral messages: ${error.message}`);
+      throw new Error(
+        `Error fetching referral messages: ${error.message}`
+      );
     }
   }
 
@@ -31,22 +45,26 @@ class ReferralMessageRepository {
     try {
       return await ReferralMessage.findByPk(id);
     } catch (error) {
-      throw new Error(`Error fetching referral message: ${error.message}`);
+      throw new Error(
+        `Error fetching referral message: ${error.message}`
+      );
+
     }
   }
 
   async delete(id) {
     try {
       const message = await ReferralMessage.findByPk(id);
-
-      if (!message) return false;
-
+      if (!message) {
+        return false;
+      }
       await message.destroy();
-
       return true;
-
     } catch (error) {
-      throw new Error(`Error deleting referral message: ${error.message}`);
+      throw new Error(
+        `Error deleting referral message: ${error.message}`
+      );
+
     }
   }
 }

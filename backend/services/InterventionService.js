@@ -1,94 +1,139 @@
+// services/InterventionService.js
+
 import InterventionRepository from '../repositories/InterventionRepository.js';
 import CaseFileRepository from '../repositories/CaseFileRepository.js';
 
+import {
+  CaseFileStatus
+} from '../enums/index.js';
+
 class InterventionService {
 
-  // Registrar intervención
   async registerIntervention(interventionData) {
 
-    if (!interventionData.caseFileId) {
-      throw new Error('El legajo es obligatorio.');
-    }
+    try {
 
-    if (!interventionData.professionalId) {
-      throw new Error('El profesional es obligatorio.');
-    }
+      if (!interventionData.caseFileId) {
+        throw new Error('El legajo es obligatorio.');
+      }
 
-    if (!interventionData.description) {
-      throw new Error('La descripción es obligatoria.');
-    }
+      if (!interventionData.professionalId) {
+        throw new Error('El profesional es obligatorio.');
+      }
 
-    // Verificamos que exista el legajo
-    const caseFile = await CaseFileRepository.getById(
-      interventionData.caseFileId
-    );
+      if (!interventionData.type) {
+        throw new Error('El tipo de intervención es obligatorio.');
+      }
 
-    if (!caseFile) {
-      throw new Error('El legajo no existe.');
-    }
+      if (!interventionData.description) {
+        throw new Error('La descripción es obligatoria.');
+      }
 
-    // Verificamos que esté abierto
-    if (caseFile.status === 'Cerrado') {
-      throw new Error(
-        'No se pueden registrar intervenciones en un legajo cerrado.'
+      const caseFile = await CaseFileRepository.getById(
+        interventionData.caseFileId
       );
-    }
 
-    return await InterventionRepository.create(interventionData);
+      if (!caseFile) {
+        throw new Error('El legajo no existe.');
+      }
+
+      if (caseFile.status === CaseFileStatus.CLOSED) {
+        throw new Error(
+          'No se pueden registrar intervenciones en un legajo cerrado.'
+        );
+      }
+
+      return await InterventionRepository.create(interventionData);
+
+    } catch (error) {
+
+      throw new Error(`Error registering intervention: ${error.message}`);
+    }
   }
 
-  // Obtener intervención por ID
   async getInterventionById(id) {
 
-    const intervention = await InterventionRepository.getById(id);
+    try {
 
-    if (!intervention) {
-      throw new Error('Intervención no encontrada.');
+      const intervention = await InterventionRepository.getById(id);
+
+      if (!intervention) {
+        throw new Error('Intervención no encontrada.');
+      }
+
+      return intervention;
+
+    } catch (error) {
+
+      throw new Error(`Error fetching intervention: ${error.message}`);
     }
-
-    return intervention;
   }
 
-  // Obtener intervenciones de un legajo
   async getCaseInterventions(caseFileId) {
 
-    return await InterventionRepository.getByCaseFileId(caseFileId);
+    try {
+
+      return await InterventionRepository.getByCaseFileId(caseFileId);
+
+    } catch (error) {
+
+      throw new Error(`Error fetching case interventions: ${error.message}`);
+    }
   }
 
-  // Obtener intervenciones de un profesional
   async getProfessionalInterventions(professionalId) {
 
-    return await InterventionRepository.getByProfessionalId(professionalId);
+    try {
+
+      return await InterventionRepository.getByProfessionalId(professionalId);
+
+    } catch (error) {
+
+      throw new Error(`Error fetching professional interventions: ${error.message}`);
+    }
   }
 
-  // Actualizar intervención
   async updateIntervention(id, updateData) {
 
-    const updatedIntervention = await InterventionRepository.update(
-      id,
-      updateData
-    );
+    try {
 
-    if (!updatedIntervention) {
-      throw new Error('No se pudo actualizar la intervención.');
+      const updatedIntervention =
+        await InterventionRepository.update(
+          id,
+          updateData
+        );
+
+      if (!updatedIntervention) {
+        throw new Error('No se pudo actualizar la intervención.');
+      }
+
+      return updatedIntervention;
+
+    } catch (error) {
+
+      throw new Error(`Error updating intervention: ${error.message}`);
     }
-
-    return updatedIntervention;
   }
 
-  // Eliminar intervención
   async deleteIntervention(id) {
 
-    const deleted = await InterventionRepository.delete(id);
+    try {
 
-    if (!deleted) {
-      throw new Error('Intervención no encontrada.');
+      const deleted = await InterventionRepository.delete(id);
+
+      if (!deleted) {
+        throw new Error('Intervención no encontrada.');
+      }
+
+      return {
+        success: true,
+        message: 'Intervención eliminada correctamente.'
+      };
+
+    } catch (error) {
+
+      throw new Error(`Error deleting intervention: ${error.message}`);
     }
-
-    return {
-      success: true,
-      message: 'Intervención eliminada correctamente.'
-    };
   }
 }
 

@@ -1,6 +1,9 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
-import { DocumentCategories } from '../enums/index.js';
+
+import {
+  DocumentCategories
+} from '../enums/index.js';
 
 const Document = sequelize.define('Document', {
 
@@ -13,7 +16,10 @@ const Document = sequelize.define('Document', {
   // Nombre visible dentro del sistema
   fileName: {
     type: DataTypes.STRING(100),
-    allowNull: false
+    allowNull: false,
+    validate: {
+      len: [3, 100]
+    }
   },
 
   // Identificador único del archivo en almacenamiento
@@ -24,51 +30,74 @@ const Document = sequelize.define('Document', {
     unique: true
   },
 
-  // Nombre original del archivo
+  // Nombre original del archivo subido
   originalName: {
-    type: DataTypes.STRING(255)
+    type: DataTypes.STRING(255),
+    allowNull: true
   },
 
-  // Tipo MIME
-  // Ej: application/pdf
+  // MIME type
+  // Ejemplo:
+  // application/pdf
+  // image/png
   mimeType: {
-    type: DataTypes.STRING(100)
+    type: DataTypes.STRING(100),
+    allowNull: true
   },
 
   // Tamaño en bytes
   fileSize: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      min: 1
+    }
   },
 
   // Categoría documental
   category: {
-    type: DataTypes.ENUM(...Object.values(DocumentCategories)),
+    type: DataTypes.ENUM(
+      ...Object.values(DocumentCategories)
+    ),
+    allowNull: false,
     defaultValue: DocumentCategories.OTHER
   },
 
-  // Fecha real del documento
-  // (no la fecha de subida)
+  // Fecha REAL del documento
+  // (no necesariamente la fecha de subida)
   documentDate: {
-    type: DataTypes.DATE
+    type: DataTypes.DATE,
+    allowNull: true
   },
 
-  // Alumno al que pertenece el documento
+  // Alumno al que pertenece
   studentId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: 'Student',
+      key: 'id'
+    }
   },
 
   // Intervención asociada (opcional)
   interventionId: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true,
+    references: {
+      model: 'Intervention',
+      key: 'id'
+    }
   },
 
-  // Usuario que subió el archivo
+  // Usuario que subió el documento
   uploadedBy: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: 'User',
+      key: 'id'
+    }
   }
 
 }, {

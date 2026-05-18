@@ -12,6 +12,7 @@ const Intervention = sequelize.define('Intervention', {
 
   interventionDate: {
     type: DataTypes.DATE,
+    allowNull: false,
     defaultValue: DataTypes.NOW
   },
 
@@ -26,23 +27,31 @@ const Intervention = sequelize.define('Intervention', {
   },
 
   summary: {
-    type: DataTypes.TEXT
+    type: DataTypes.TEXT,
+    allowNull: true
   },
 
   outcome: {
-    type: DataTypes.TEXT
+    type: DataTypes.TEXT,
+    allowNull: true
   },
 
-  // Legajo asociado
   caseFileId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: 'CaseFile',
+      key: 'id'
+    }
   },
 
-  // Profesional responsable
   professionalId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: 'User',
+      key: 'id'
+    }
   }
 
 }, {

@@ -2,25 +2,11 @@ import ReferralHistoryRepository from '../repositories/ReferralHistoryRepository
 
 class ReferralHistoryService {
 
-  async registerHistory({
-    referralId,
-    action,
-    oldStatus,
-    newStatus,
-    comment,
-    changedBy
-  }) {
+  async registerHistory(historyData) {
 
     try {
 
-      return await ReferralHistoryRepository.create({
-        referralId,
-        action,
-        oldStatus,
-        newStatus,
-        comment,
-        changedBy
-      });
+      return await ReferralHistoryRepository.create(historyData);
 
     } catch (error) {
       throw new Error(`Error registering referral history: ${error.message}`);
@@ -37,6 +23,7 @@ class ReferralHistoryService {
       throw new Error(`Error fetching referral timeline: ${error.message}`);
     }
   }
+
 }
 
 export default new ReferralHistoryService();

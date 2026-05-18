@@ -1,6 +1,6 @@
 export const CaseFilePriority = Object.freeze({
   LOW: 'Baja',
-  MEDIUM: 'Media',
+  NORMAL: 'Normal',
   HIGH: 'Alta'
 });
 

@@ -1,78 +1,124 @@
+// services/DocumentService.js
+
 import DocumentRepository from '../repositories/DocumentRepository.js';
 
 class DocumentService {
 
-  // Registrar/subir un nuevo documento
   async uploadDocument(documentData) {
 
-    if (!documentData.fileName) {
-      throw new Error('El nombre del documento es obligatorio.');
-    }
+    try {
 
-    if (!documentData.storageKey) {
-      throw new Error('La clave de almacenamiento es obligatoria.');
-    }
+      if (!documentData.fileName) {
+        throw new Error('El nombre del archivo es obligatorio.');
+      }
 
-    if (!documentData.studentId) {
-      throw new Error('El documento debe estar asociado a un estudiante.');
-    }
+      if (!documentData.storageKey) {
+        throw new Error('La clave de almacenamiento es obligatoria.');
+      }
 
-    if (!documentData.uploadedBy) {
-      throw new Error('Debe especificarse qué usuario subió el documento.');
-    }
+      if (!documentData.fileSize) {
+        throw new Error('El tamaño del archivo es obligatorio.');
+      }
 
-    return await DocumentRepository.create(documentData);
+      if (!documentData.studentId) {
+        throw new Error('El alumno es obligatorio.');
+      }
+
+      if (!documentData.uploadedBy) {
+        throw new Error('El usuario que sube el archivo es obligatorio.');
+      }
+
+      return await DocumentRepository.create(documentData);
+
+    } catch (error) {
+
+      throw new Error(`Error uploading document: ${error.message}`);
+    }
   }
 
-  // Obtener documento por ID
   async getDocumentById(id) {
 
-    const document = await DocumentRepository.getById(id);
+    try {
 
-    if (!document) {
-      throw new Error('Documento no encontrado.');
+      const document = await DocumentRepository.getById(id);
+
+      if (!document) {
+        throw new Error('Documento no encontrado.');
+      }
+
+      return document;
+
+    } catch (error) {
+
+      throw new Error(`Error fetching document: ${error.message}`);
     }
-
-    return document;
   }
 
-  // Obtener todos los documentos de un estudiante
   async getStudentDocuments(studentId) {
 
-    return await DocumentRepository.getByStudentId(studentId);
+    try {
+
+      return await DocumentRepository.getByStudentId(studentId);
+
+    } catch (error) {
+
+      throw new Error(`Error fetching student documents: ${error.message}`);
+    }
   }
 
-  // Obtener documentos de una intervención
   async getInterventionDocuments(interventionId) {
 
-    return await DocumentRepository.getByInterventionId(interventionId);
+    try {
+
+      return await DocumentRepository.getByInterventionId(interventionId);
+
+    } catch (error) {
+
+      throw new Error(`Error fetching intervention documents: ${error.message}`);
+    }
   }
 
-  // Actualizar documento
   async updateDocument(id, updateData) {
 
-    const updatedDocument = await DocumentRepository.update(id, updateData);
+    try {
 
-    if (!updatedDocument) {
-      throw new Error('No se pudo actualizar el documento.');
+      const updatedDocument =
+        await DocumentRepository.update(
+          id,
+          updateData
+        );
+
+      if (!updatedDocument) {
+        throw new Error('Documento no encontrado.');
+      }
+
+      return updatedDocument;
+
+    } catch (error) {
+
+      throw new Error(`Error updating document: ${error.message}`);
     }
-
-    return updatedDocument;
   }
 
-  // Eliminar documento
   async deleteDocument(id) {
 
-    const deleted = await DocumentRepository.delete(id);
+    try {
 
-    if (!deleted) {
-      throw new Error('Documento no encontrado.');
+      const deleted = await DocumentRepository.delete(id);
+
+      if (!deleted) {
+        throw new Error('Documento no encontrado.');
+      }
+
+      return {
+        success: true,
+        message: 'Documento eliminado correctamente.'
+      };
+
+    } catch (error) {
+
+      throw new Error(`Error deleting document: ${error.message}`);
     }
-
-    return {
-      success: true,
-      message: 'Documento eliminado correctamente.'
-    };
   }
 }
 

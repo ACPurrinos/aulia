@@ -1,13 +1,16 @@
 import ReferralMessageRepository from '../repositories/ReferralMessageRepository.js';
+
 import ReferralRepository from '../repositories/ReferralRepository.js';
 
 class ReferralMessageService {
 
-  async sendMessage(messageData, senderId) {
+  async sendMessage(messageData, userId) {
 
     try {
 
-      const referral = await ReferralRepository.getById(messageData.referralId);
+      const referral = await ReferralRepository.getById(
+        messageData.referralId
+      );
 
       if (!referral) {
         throw new Error('Referral not found.');
@@ -15,13 +18,16 @@ class ReferralMessageService {
 
       return await ReferralMessageRepository.create({
         referralId: messageData.referralId,
-        userId: senderId,
-        senderType: messageData.senderType,
+        userId,
         message: messageData.message
       });
 
     } catch (error) {
-      throw new Error(`Error sending message: ${error.message}`);
+
+      throw new Error(
+        `Error sending message: ${error.message}`
+      );
+
     }
   }
 
@@ -29,16 +35,24 @@ class ReferralMessageService {
 
     try {
 
-      const referral = await ReferralRepository.getById(referralId);
+      const referral = await ReferralRepository.getById(
+        referralId
+      );
 
       if (!referral) {
         throw new Error('Referral not found.');
       }
 
-      return await ReferralMessageRepository.getByReferralId(referralId);
+      return await ReferralMessageRepository.getByReferralId(
+        referralId
+      );
 
     } catch (error) {
-      throw new Error(`Error fetching conversation: ${error.message}`);
+
+      throw new Error(
+        `Error fetching conversation: ${error.message}`
+      );
+
     }
   }
 
@@ -46,12 +60,15 @@ class ReferralMessageService {
 
     try {
 
-      const message = await ReferralMessageRepository.getById(messageId);
+      const message = await ReferralMessageRepository.getById(
+        messageId
+      );
 
       if (!message) {
         throw new Error('Message not found.');
       }
 
+      // solo el autor puede borrar
       if (message.userId !== userId) {
         throw new Error('Unauthorized action.');
       }
@@ -64,7 +81,11 @@ class ReferralMessageService {
       };
 
     } catch (error) {
-      throw new Error(`Error deleting message: ${error.message}`);
+
+      throw new Error(
+        `Error deleting message: ${error.message}`
+      );
+
     }
   }
 }

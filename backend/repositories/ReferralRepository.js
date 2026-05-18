@@ -5,6 +5,7 @@ class ReferralRepository {
   async create(referralData) {
     try {
       return await Referral.create(referralData);
+
     } catch (error) {
       throw new Error(`Error creating referral: ${error.message}`);
     }
@@ -12,6 +13,7 @@ class ReferralRepository {
 
   async getAll() {
     try {
+
       return await Referral.findAll({
         include: [
           {
@@ -31,6 +33,7 @@ class ReferralRepository {
         ],
         order: [['createdAt', 'DESC']]
       });
+
     } catch (error) {
       throw new Error(`Error fetching referrals: ${error.message}`);
     }
@@ -38,6 +41,7 @@ class ReferralRepository {
 
   async getById(id) {
     try {
+
       return await Referral.findByPk(id, {
         include: [
           {
@@ -48,9 +52,21 @@ class ReferralRepository {
             model: User,
             as: 'referrer',
             attributes: ['id', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'reviewer',
+            attributes: ['id', 'firstName', 'lastName'],
+            required: false
+          },
+          {
+            model: CaseFile,
+            attributes: ['id', 'status'],
+            required: false
           }
         ]
       });
+
     } catch (error) {
       throw new Error(`Error fetching referral: ${error.message}`);
     }
@@ -58,9 +74,12 @@ class ReferralRepository {
 
   async update(id, updateData) {
     try {
+
       const referral = await Referral.findByPk(id);
 
-      if (!referral) return null;
+      if (!referral) {
+        return null;
+      }
 
       return await referral.update(updateData);
 
@@ -71,9 +90,12 @@ class ReferralRepository {
 
   async delete(id) {
     try {
+
       const referral = await Referral.findByPk(id);
 
-      if (!referral) return false;
+      if (!referral) {
+        return false;
+      }
 
       await referral.destroy();
 

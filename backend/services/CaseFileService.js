@@ -1,41 +1,88 @@
-import CaseFileRepository from '../repositories/CaseFileRepository.js';
+import CaseFileRepository
+  from '../repositories/CaseFileRepository.js';
 
 import {
-  CaseFileStatus,
-  CaseFilePriority
+  CaseFileStatus
 } from '../enums/index.js';
 
 class CaseFileService {
 
-  async openCaseFile(caseFileData) {
+  async createCaseFile(caseFileData) {
 
     try {
 
-      const existingCase =
-        await CaseFileRepository.getOpenByStudentId(
+      const existingCaseFile =
+        await CaseFileRepository.getByStudentId(
           caseFileData.studentId
         );
 
-      if (existingCase) {
+      if (existingCaseFile) {
         throw new Error(
-          'El estudiante ya tiene un legajo abierto.'
+          'El alumno ya posee un legajo.'
         );
       }
 
-      return await CaseFileRepository.create({
-        ...caseFileData,
-        status: CaseFileStatus.OPEN,
-        priority:
-          caseFileData.priority ||
-          CaseFilePriority.MEDIUM
-      });
+      return await CaseFileRepository.create(
+        caseFileData
+      );
 
     } catch (error) {
-      throw new Error(`Error opening case file: ${error.message}`);
+
+      throw new Error(
+        `Error creating case file: ${error.message}`
+      );
     }
   }
 
-  async getCaseHistory(id) {
+  async getCaseFileById(id) {
+
+    try {
+
+      const caseFile =
+        await CaseFileRepository.getById(id);
+
+      if (!caseFile) {
+        throw new Error(
+          'Legajo no encontrado.'
+        );
+      }
+
+      return caseFile;
+
+    } catch (error) {
+
+      throw new Error(
+        `Error fetching case file: ${error.message}`
+      );
+    }
+  }
+
+  async getStudentCaseFile(studentId) {
+
+    try {
+
+      const caseFile =
+        await CaseFileRepository.getByStudentId(
+          studentId
+        );
+
+      if (!caseFile) {
+        throw new Error(
+          'El alumno no posee legajo.'
+        );
+      }
+
+      return caseFile;
+
+    } catch (error) {
+
+      throw new Error(
+        `Error fetching student case file: ${error.message}`
+      );
+    }
+  }
+
+  async getCaseFileHistory(id) {
 
     try {
 
@@ -43,51 +90,132 @@ class CaseFileService {
         await CaseFileRepository.getFullHistoryById(id);
 
       if (!caseFile) {
-        throw new Error('Legajo no encontrado.');
+        throw new Error(
+          'Legajo no encontrado.'
+        );
       }
 
       return caseFile;
 
     } catch (error) {
-      throw new Error(`Error fetching history: ${error.message}`);
+
+      throw new Error(
+        `Error fetching case history: ${error.message}`
+      );
     }
   }
 
-  async closeCase(id) {
+  async getOpenCaseFiles() {
 
     try {
 
-      const closedCase =
-        await CaseFileRepository.closeCase(id);
-
-      if (!closedCase) {
-        throw new Error('No se pudo cerrar el legajo.');
-      }
-
-      return closedCase;
+      return await CaseFileRepository.getAllOpen();
 
     } catch (error) {
-      throw new Error(`Error closing case file: ${error.message}`);
+
+      throw new Error(
+        `Error fetching open case files: ${error.message}`
+      );
     }
   }
 
-  async updatePriority(id, priority) {
+  async updateCaseFile(id, updateData) {
 
     try {
 
-      const updatedCase =
-        await CaseFileRepository.update(id, {
-          priority
-        });
+      const updatedCaseFile =
+        await CaseFileRepository.update(
+          id,
+          updateData
+        );
 
-      if (!updatedCase) {
-        throw new Error('Legajo no encontrado.');
+      if (!updatedCaseFile) {
+        throw new Error(
+          'No se pudo actualizar el legajo.'
+        );
       }
 
-      return updatedCase;
+      return updatedCaseFile;
 
     } catch (error) {
-      throw new Error(`Error updating priority: ${error.message}`);
+
+      throw new Error(
+        `Error updating case file: ${error.message}`
+      );
+    }
+  }
+
+  async closeCaseFile(id) {
+
+    try {
+
+      const caseFile =
+        await CaseFileRepository.getById(id);
+
+      if (!caseFile) {
+        throw new Error(
+          'Legajo no encontrado.'
+        );
+      }
+
+      if (
+        caseFile.status ===
+        CaseFileStatus.CLOSED
+      ) {
+        throw new Error(
+          'El legajo ya está cerrado.'
+        );
+      }
+
+      return await CaseFileRepository.update(
+        id,
+        {
+          status: CaseFileStatus.CLOSED
+        }
+      );
+
+    } catch (error) {
+
+      throw new Error(
+        `Error closing case file: ${error.message}`
+      );
+    }
+  }
+
+  async reopenCaseFile(id) {
+
+    try {
+
+      const caseFile =
+        await CaseFileRepository.getById(id);
+
+      if (!caseFile) {
+        throw new Error(
+          'Legajo no encontrado.'
+        );
+      }
+
+      if (
+        caseFile.status ===
+        CaseFileStatus.OPEN
+      ) {
+        throw new Error(
+          'El legajo ya está abierto.'
+        );
+      }
+
+      return await CaseFileRepository.update(
+        id,
+        {
+          status: CaseFileStatus.OPEN
+        }
+      );
+
+    } catch (error) {
+
+      throw new Error(
+        `Error reopening case file: ${error.message}`
+      );
     }
   }
 }
