@@ -12,9 +12,9 @@ class CourseRepository {
     return await Course.findAll({
       where: { active: true },
       order: [
-        ['level', 'ASC'],  
-        ['grade', 'ASC'],  
-        ['division', 'ASC'] 
+        ['level', 'ASC'],
+        ['grade', 'ASC'],
+        ['division', 'ASC']
       ]
     });
   }
@@ -30,12 +30,22 @@ class CourseRepository {
       include: [
         {
           model: Student,
-          where: { active: true }, 
+          where: { active: true },
           required: false, // Si el curso está vacío, igual nos trae los datos del curso
-          attributes: ['id', 'firstName', 'lastName', 'birthDate']
+          attributes: ['id', 'birthDate'],
+          include: [
+            {
+              model: User,
+              attributes: [
+                'id',
+                'firstName',
+                'lastName'
+              ]
+            }
+          ]
         }
       ],
-      order: [[Student, 'lastName', 'ASC']] 
+      order: [[Student, User, 'lastName', 'ASC']]
     });
   }
 

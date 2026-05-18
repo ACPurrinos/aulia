@@ -29,10 +29,16 @@ class DocumentRepository {
         include: [
           {
             model: Student,
-            attributes: [
-              'id',
-              'firstName',
-              'lastName'
+            attributes: ['id'],
+            include: [
+              {
+                model: User,
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
+              }
             ]
           },
           {
@@ -68,7 +74,7 @@ class DocumentRepository {
         include: [
           {
             model: User,
-            as: 'uploader',
+            as: 'uploader', // --> Andi!!! revisar alias
             attributes: [
               'id',
               'firstName',
@@ -99,7 +105,7 @@ class DocumentRepository {
         include: [
           {
             model: User,
-            as: 'uploader',
+            as: 'uploader', // acá también
             attributes: [
               'id',
               'firstName',

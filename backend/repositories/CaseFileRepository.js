@@ -69,12 +69,18 @@ class CaseFileRepository {
             model: Student,
             attributes: [
               'id',
-              'firstName',
-              'lastName',
               'birthDate'
             ],
 
             include: [
+              {
+                model: User,
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
+              },
               {
                 model: Course,
                 attributes: [
@@ -133,10 +139,16 @@ class CaseFileRepository {
         include: [
           {
             model: Student,
-            attributes: [
-              'id',
-              'firstName',
-              'lastName'
+            attributes: ['id'],
+            include: [
+              {
+                model: User,
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
+              }
             ]
           }
         ],
