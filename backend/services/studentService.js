@@ -8,11 +8,14 @@ const createStudent = async(student)=>{
         const userFound = await UserRepository.findUserById(student.userId);
         if(!userFound) throw new Error('User not found');
 
+        const studentFound = await StudentRepository.findStudentByIdUser(student.userId);
+        if(studentFound) throw new Error('Student already exists');
+
         const stu = new Student({
             birthDate: student.birthDate,
             familyConsent: student.familyConsent,
             active: true,
-            userId: foundRole.id,
+            userId: userFound.id,
         });
         const savedStudent = await StudentRepository.saveStudent(stu);
         if(savedStudent){

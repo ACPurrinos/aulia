@@ -35,6 +35,14 @@ class StudentRepository {
         }       
     }
 
+    async findStudentByIdUser(id) {
+        try {
+            return await Student.findOne({where:{userId: id}});    
+        } catch (error) {
+            console.log('Find Error: ', error);
+        }       
+    }
+
     async updateStudent(id, data) {
         try {
             const student = await this.findStudentById(id,{ where: { id }});

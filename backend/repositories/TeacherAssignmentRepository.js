@@ -35,6 +35,15 @@ class TeacherAssignmentRepository {
         }       
     }
 
+    async findTeacherAssignmentByUser(useIrd) {
+        try {
+            return await TeacherAssignment.findOne({where: {teacherId: userId}});    
+        } catch (error) {
+            console.log('Find Error: ', error);
+        }       
+    }
+
+
     async updateTeacherAssignment(id, data) {
         try {
             const teacher = await this.findTeacherAssignmentById(id);
@@ -57,3 +66,5 @@ class TeacherAssignmentRepository {
         }
     }
 }
+
+export default new TeacherAssignmentRepository();

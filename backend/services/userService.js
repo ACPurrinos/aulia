@@ -20,6 +20,8 @@ const createUser = async(user)=>{
             throw new Error ('The role dont exists'); 
         }
 
+        
+
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(user.password.trim(), salt);
 
