@@ -13,15 +13,15 @@ class TeacherAssignmentRepository {
     async findAllTeacherAssignments(){
         try {
             const PAGE_LIMIT = 10;
-        const DEFAULT_PAGE = 1;
+            const DEFAULT_PAGE = 1;
 
-        const offset = (DEFAULT_PAGE - 1) * PAGE_LIMIT;
-        
-        return await TeacherAssignment.findAndCountAll({
-            limit: PAGE_LIMIT,
-            offset: offset,
-            order: [['createdAt', 'DESC']],
-        });
+            const offset = (DEFAULT_PAGE - 1) * PAGE_LIMIT;
+            
+            return await TeacherAssignment.findAndCountAll({
+                limit: PAGE_LIMIT,
+                offset: offset,
+                order: [['createdAt', 'DESC']],
+            });
         } catch (error) {
             console.log('Find Error: ', error);
         }      
@@ -37,7 +37,7 @@ class TeacherAssignmentRepository {
 
     async findTeacherAssignmentByUser(useIrd) {
         try {
-            return await TeacherAssignment.findOne({where: {teacherId: userId}});    
+            return await TeacherAssignment.findAll({where: {teacherId: userId}});    
         } catch (error) {
             console.log('Find Error: ', error);
         }       
@@ -46,12 +46,9 @@ class TeacherAssignmentRepository {
 
     async updateTeacherAssignment(id, data) {
         try {
-            const teacher = await this.findTeacherAssignmentById(id);
-        if (!teacher) return null;
-
-        const [rowsAffected] = await TeacherAssignment.update(data, { where: { id }});
-        if (rowsAffected === 0) throw new Error('Update error');
-        return await this.findTeacherAssignmentById(id);
+            const [rowsAffected, [updated]] = await TeacherAssignment.update(data, { where: { id }, returning: true});
+            if (rowsAffected === 0) throw new Error('Update error');
+            return updated;
         } catch (error) {
             console.log('Update Error: ', error);
         }     
@@ -60,7 +57,7 @@ class TeacherAssignmentRepository {
     async deleteTeacherAssignment(id) {
         try {
             const deleted = await TeacherAssignment.destroy({ where: { id } });
-        return deleted > 0;
+            return deleted > 0;
         } catch (error) {
             console.log('Delete Error: ', error);
         }

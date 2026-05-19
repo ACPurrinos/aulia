@@ -2,7 +2,6 @@ import TeacherAssignmentRepository from "../repositories/TeacherAssignmentReposi
 import UserRepository from "../repositories/UserRepository.js";
 import CourseRepository from "../repositories/CourseRepository.js"; 
 import SubjectRepository from "../repositories/SubjectRepository.js";
-import TeacherAssignment from "../models/TeacherAssignment.js";
 
 
 const saveTeacherAssignment = async(data)=>{
@@ -14,7 +13,7 @@ const saveTeacherAssignment = async(data)=>{
         if(!userCourse) throw new Error('Course not found');
 
         const subjectFound = await SubjectRepository.findSubjectById(data.subjectId);
-        if(!userFound) throw new Error('Subject not found');
+        if(!subjectFound) throw new Error('Subject not found');
 
         const assignment = await TeacherAssignmentRepository.saveTeacherAssignment(data);
         return {message: 'Saved sucessfully', assignment: assignment}
@@ -36,7 +35,8 @@ const findTeacherAssignmentbyId = async(id)=>{
 const findAllTeacherAssignment = async()=> {
     try {
         const assignments = await TeacherAssignmentRepository.findAllTeacherAssignments();
-        if(assignments.lenght === 0) throw new Error('There arent teacher assignments');
+        if(assignments.length === 0) throw new Error('No teacher assignments found');
+    return assignments;
     } catch (error) {
         throw new Error(error.message);
     }
@@ -45,8 +45,8 @@ const findAllTeacherAssignment = async()=> {
 const findTeacherAssignmentbyUser = async(teacherId)=>{
     try {
         const foundAssignments = await TeacherAssignmentRepository.findTeacherAssignmentByUser(teacherId);
-        if(!foundAssignments.lenght === 0) throw new Error('This teacher has no assignments'); 
-        return foundAssignment;
+        if(foundAssignments.length === 0) throw new Error('This teacher has no assignments'); 
+        return foundAssignments;
     } catch (error) {
         throw new Error(error.message);
     }
@@ -69,7 +69,7 @@ const updateTeacherAssignment = async(id, data)=>{
 
         if(data.subjectId){
             const subjectFound = await SubjectRepository.findSubjectById(data.subjectId);
-            if(!userFound) throw new Error('Subject not found');
+            if(!subjectFound) throw new Error('Subject not found');
         }
         const updatedAssignment = await TeacherAssignmentRepository.updateTeacherAssignment(id, data);
         if(!updatedAssignment) throw new Error('An error occurred during the update process');

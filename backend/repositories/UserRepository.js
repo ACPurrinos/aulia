@@ -69,12 +69,9 @@ class UserRepository {
 
     async updateUser(id, data) {
         try {
-            const user = await this.findUserById(id);
-        if (!user) return null;
-        
-        const [rowsAffected] = await User.update(data, { where: { id }});
+        const [rowsAffected, [updated]] = await User.update(data, { where: { id }, returning: true});
         if (rowsAffected === 0) throw new Error('Update error');
-        return await this.findUserById(id);
+        return updated;
         } catch (error) {
             console.log('Update Error: ', error);
         }     

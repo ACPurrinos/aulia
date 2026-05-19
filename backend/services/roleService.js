@@ -4,9 +4,10 @@ import RolRepository from "../repositories/RolRepository.js";
 const findAllRoles = async()=>{
     try {
         const roles = await RolRepository.findAllRoles();
-        if(users.length === 0) {
+        if(roles.length === 0) {
             throw new Error('There are no roles');
         }
+        return roles;
     } catch (error) {
         throw new Error(error.message);
     }

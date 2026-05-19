@@ -45,12 +45,9 @@ class StudentRepository {
 
     async updateStudent(id, data) {
         try {
-            const student = await this.findStudentById(id,{ where: { id }});
-        if (!student) return null;
-
-        const [rowsAffected] = await Student.update(data, { where: { id }});
+        const [rowsAffected, [updated]] = await Student.update(data, { where: { id }, returning: true});
         if (rowsAffected === 0) throw new Error('Update error');
-        return await this.findStudentById(id);
+        return updated;
         } catch (error) {
             console.log('Update Error: ', error);
         }     

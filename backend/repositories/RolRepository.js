@@ -37,7 +37,7 @@ class RolRepository {
 
     async findByName(name){
         try {
-            Role.findOne(
+            return await Role.findOne(
                 {where: {
                 name: name
                 }
@@ -49,12 +49,9 @@ class RolRepository {
 
     async updateRol(id, data) {
         try {
-            const rol = await this.findRolById(id);
-        if (!rol) return null;
-
-        const [rowsAffected] = await Role.update(data, { where: { id }});
+        const [rowsAffected, [updated]] = await Role.update(data, { where: { id }, returning: true});
         if (rowsAffected === 0) throw new Error('Update error');
-        return await this.findRolById(id);
+        return updated;
         } catch (error) {
             console.log('Update Error: ', error);
         }     

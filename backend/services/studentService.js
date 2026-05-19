@@ -21,7 +21,7 @@ const createStudent = async(student)=>{
         if(savedStudent){
             return {message: 'Student created successfully', user: savedStudent};
         }else{
-            throw new Error('Error while saving user');
+            throw new Error('Error while saving student');
         }
     } catch (error) {
         throw new Error(error.message);
@@ -42,7 +42,7 @@ const findStudentById = async(id)=>{
 const findAllStudents = async()=>{
     try {
         const students = await StudentRepository.findAllStudents();
-        if(!students) throw new Error('There arent students');
+        if(students.length === 0) throw new Error('There arent students');
 
         return students;
     } catch (error) {

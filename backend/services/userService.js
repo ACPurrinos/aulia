@@ -1,5 +1,6 @@
 import UserRepository from '../repositories/UserRepository.js';
 import RolRepository from '../repositories/RolRepository.js';
+import User from '../models/User.js';
 import bcrypt from "bcryptjs";
 
 const createUser = async(user)=>{
@@ -19,8 +20,6 @@ const createUser = async(user)=>{
         if(!foundRole){
             throw new Error ('The role dont exists'); 
         }
-
-        
 
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(user.password.trim(), salt);
@@ -61,7 +60,7 @@ const findUserById = async(id)=>{
 const findAllUsers = async()=>{
     try {
         const users = await UserRepository.findAllUsers();
-        if(users.lenght === 0){
+        if(users.length === 0){
             throw new Error('There arent users');
         }
         return users;
