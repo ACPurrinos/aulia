@@ -60,9 +60,6 @@ const findUserById = async(id)=>{
 const findAllUsers = async()=>{
     try {
         const users = await UserRepository.findAllUsers();
-        if(users.length === 0){
-            throw new Error('There arent users');
-        }
         return users;
     } catch (error) {
         throw new Error(error.message);
@@ -93,8 +90,11 @@ const updateUser = async(id, user)=>{
                 user.password = foundUserWithPassword.password;
             }
         }       
-        const updateUser = await UserRepository.updateUser(id, user);
-        return {message: 'User updated successfully', user: updateUser};
+        const updatedUser = await UserRepository.updateUser(id, user);
+        if(!updatedUser){
+            return {error: 'An error ocurred during update'};
+        }
+        return {message: 'User updated successfully', user: updatedUser};
     } catch (error) {
         throw new Error(error.message);
     }

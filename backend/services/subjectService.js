@@ -16,7 +16,6 @@ const saveSubject = async(data)=>{
 const findAllSubjects = async()=>{
     try {
         const subjects = await SubjectRepository.findAllSubjects();
-        if(subjects.length === 0) throw new Error('No subjects found');
         return subjects;
     } catch (error) {
         throw new Error(error.message); 

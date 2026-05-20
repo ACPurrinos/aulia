@@ -6,8 +6,9 @@ import SubjectRepository from "../repositories/SubjectRepository.js";
 
 const saveTeacherAssignment = async(data)=>{
     try {
-        const userFound = await UserRepository.findUserById(data.teacherId);
+        const userFound = await UserRepository.findUserByIdWithRole(data.teacherId);
         if(!userFound) throw new Error('User not found');
+        if(userFound.Role.name !== 'Docente') throw new Error('This user is not a teacher');
 
         const userCourse = await CourseRepository.getById(data.courseId);
         if(!userCourse) throw new Error('Course not found');
@@ -15,8 +16,11 @@ const saveTeacherAssignment = async(data)=>{
         const subjectFound = await SubjectRepository.findSubjectById(data.subjectId);
         if(!subjectFound) throw new Error('Subject not found');
 
-        const assignment = await TeacherAssignmentRepository.saveTeacherAssignment(data);
-        return {message: 'Saved sucessfully', assignment: assignment}
+        const currentYear = new Date().getFullYear();
+        const assignment = {...data, academicYear: currentYear};
+
+        const savedAssignment = await TeacherAssignmentRepository.saveTeacherAssignment(assignment);
+        return {message: 'Saved sucessfully', assignment: savedAssignment}
     } catch (error) {
         throw new Error(error.message);
     }
@@ -35,7 +39,6 @@ const findTeacherAssignmentbyId = async(id)=>{
 const findAllTeacherAssignment = async()=> {
     try {
         const assignments = await TeacherAssignmentRepository.findAllTeacherAssignments();
-        if(assignments.length === 0) throw new Error('No teacher assignments found');
     return assignments;
     } catch (error) {
         throw new Error(error.message);

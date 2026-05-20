@@ -42,8 +42,6 @@ const findStudentById = async(id)=>{
 const findAllStudents = async()=>{
     try {
         const students = await StudentRepository.findAllStudents();
-        if(students.length === 0) throw new Error('There arent students');
-
         return students;
     } catch (error) {
         throw new Error(error.message);

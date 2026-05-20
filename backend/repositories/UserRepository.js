@@ -35,7 +35,17 @@ class UserRepository {
         }       
     }
 
-    async findUserByIdWithPassword (id){
+    async findUserByIdWithRole(id) {
+        try {
+            return await User.findByPk(id, {
+        include: [{ model: Role }]
+    });
+        } catch (error) {
+            console.log('Find Error: ', error);
+        }    
+}
+
+    async findUserByIdWithPassword(id){
         try {
             return await User.scope('withPassword').findByPk(id);
         } catch (error) {

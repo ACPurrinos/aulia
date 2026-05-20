@@ -20,7 +20,7 @@ class RolRepository {
         return await Role.findAndCountAll({
             limit: PAGE_LIMIT,
             offset: offset,
-            order: [['createdAt', 'DESC']],
+            order: [['name', 'ASC']],
         });
         } catch (error) {
             console.log('Find Error: ', error);
