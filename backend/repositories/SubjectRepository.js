@@ -20,7 +20,7 @@ class SubjectRepository{
         return await Subject.findAndCountAll({
             limit: PAGE_LIMIT,
             offset: offset,
-            order: [['createdAt', 'DESC']],
+            order: [['id', 'DESC']],
         });
         } catch (error) {
             console.log('Find Error: ', error);
@@ -37,7 +37,9 @@ class SubjectRepository{
 
     async findSubjectByName(name) {
         try {
-            return await Subject.findByOne(name);    
+            return await Subject.findOne({
+            where: { name: name }
+        });    
         } catch (error) {
             console.log('Find Error: ', error);
         }       

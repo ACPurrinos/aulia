@@ -35,3 +35,11 @@ const getUrgentHelperRequest = async()=>{
         throw new Error(error.message);
     }
 }
+
+const checkInservice = {
+    saveCheckIn,
+    getDailySummary,
+    getUrgentHelperRequest
+}
+
+export default checkInservice;

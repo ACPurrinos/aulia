@@ -1,4 +1,3 @@
-import TeacherAssignmentRepository from '../repositories/TeacherAssignmentRepository.js';
 import teacherAssignmentService from '../services/teacherAssignmentService.js';
 
 const saveTeacherAssignment = async(req, res)=>{
@@ -58,7 +57,7 @@ const deleteTeacherAssignment = async(req, res)=>{
         const id = req.params.id;
         const deletedAssignment = await teacherAssignmentService.deleteTeacherAssignment(id);
         if (!deletedAssignment){
-            return res.status(400).json({error: 'User not found'});
+            return res.status(400).json({error: 'An error ocurred during delete'});
         }
         res.status(200).json( {message: 'Deleted sucessfully'});
     } catch (error) {

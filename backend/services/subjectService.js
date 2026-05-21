@@ -1,4 +1,4 @@
-import SubjectRepository from "../repositories/SubjectRepository";
+import SubjectRepository from "../repositories/SubjectRepository.js";
 
 const saveSubject = async(data)=>{
     try {
@@ -34,7 +34,7 @@ const findSubjectById = async(id)=>{
 
 const updateSubject = async(id, data)=>{
     try {
-        const foundSubject = await SubjectRepository.findSubjectById(id);
+        const foundSubject = await SubjectRepository.findSubjectById(id);        
         if(!foundSubject) throw new Error('Subject not found');
 
         const updatedSubject = await SubjectRepository.updateSubject(id, data);
