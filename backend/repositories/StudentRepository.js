@@ -1,4 +1,5 @@
-import Student from '../models/Student.js'
+import Student from '../models/Student.js';
+import User from '../models/User.js';
 
 class StudentRepository {
 
@@ -21,6 +22,10 @@ class StudentRepository {
             limit: PAGE_LIMIT,
             offset: offset,
             order: [['createdAt', 'DESC']],
+            include: [{
+                model: User,
+                attributes: ['firstName', 'lastName']
+            }]
         });
         } catch (error) {
             console.log('Find Error: ', error);
@@ -29,7 +34,12 @@ class StudentRepository {
 
     async findStudentById(id) {
         try {
-            return await Student.findByPk(id);    
+            return await Student.findByPk(id, {
+            include: [{
+                model: User,
+                attributes: ['firstName', 'lastName'] 
+            }]
+        });    
         } catch (error) {
             console.log('Find Error: ', error);
         }       

@@ -4,6 +4,6 @@ import checkInController from '../controllers/checkInController.js';
 
 router.get('/summary', checkInController.getSummary);
 router.get('/helperRequest', checkInController.getHelperRequest);
-router.post('/savecheckIn/', checkInController.saveCheckIn);
+router.post('/saveCheckIn/', checkInController.saveCheckIn);
 
 export default router;

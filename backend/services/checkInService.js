@@ -11,7 +11,7 @@ const saveCheckIn = async(data)=>{
         const courseFound = await CourseRepository.getById(data.courseId);
         if(!courseFound) throw new Error('Course not found');
 
-        const savedCheckIn = await CheckInRepository.saveCheckIn(data);
+        const savedCheckIn = await CheckInRepository.create(data);
         return {message: 'Saved successfully', checkIn: savedCheckIn};
     } catch (error) {
         throw new Error(error.message);

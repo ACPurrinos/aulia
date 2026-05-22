@@ -1,4 +1,4 @@
-import { CheckIn, Student } from '../models/index.js';
+import { CheckIn, Student, User } from '../models/index.js';
 import { Op } from 'sequelize';
 
 class CheckInRepository {
@@ -15,7 +15,8 @@ class CheckInRepository {
           [Op.gte]: today
         }
       },
-      include: [{ model: Student, attributes: ['id', 'lastName', 'firstName'] }]
+      include: [{ model: Student, attributes: ['id'], 
+                  include: [{ model: User, attributes: ['lastName', 'firstName']}] }]
     });
   }
 
@@ -23,7 +24,8 @@ class CheckInRepository {
   async getUrgentHelpRequests() {
     return await CheckIn.findAll({
       where: { helpRequested: true },
-      include: [{ model: Student, attributes: ['id', 'lastName', 'firstName'] }],
+      include: [{ model: Student, attributes: ['id'], 
+                  include: [{ model: User, attributes: ['lastName', 'firstName']}] }],
       order: [['createdAt', 'DESC']]
     });
   }

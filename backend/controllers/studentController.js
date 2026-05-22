@@ -4,7 +4,7 @@ import studentService from '../services/studentService.js';
 const saveStudent = async(req, res)=>{
     try {
         const result = await studentService.createStudent(req.body);
-        res.status(201).json({ message: result.message, user: result.user });
+        res.status(201).json({ message: result.message, student: result.student });
     } catch (error) {
         res.status(400).json({message: error.message});
     }
@@ -41,7 +41,7 @@ const updateStudent = async (req, res) => {
         if (result.error) {
             return res.status(400).json({ message: result.error });
         }
-        res.status(200).json({ cliente: result.cliente, message: result.message });
+        res.status(200).json({ message: result.message, student: result.student });
     } catch (error) {
         res.status(400).json({message: error.message});
     }    

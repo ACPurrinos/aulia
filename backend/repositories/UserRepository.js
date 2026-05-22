@@ -1,4 +1,5 @@
 import User from '../models/User.js'
+import Role from '../models/Role.js'
 
 class UserRepository {
 
@@ -43,7 +44,7 @@ class UserRepository {
         } catch (error) {
             console.log('Find Error: ', error);
         }    
-}
+    }
 
     async findUserByIdWithPassword(id){
         try {
