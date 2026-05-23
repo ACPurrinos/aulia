@@ -1,3 +1,6 @@
+import Subject from '../models/Subject.js';
+import User from '../models/User.js';
+import Course from '../models/Course.js';
 import TeacherAssignment from '../models/TeacherAssignment.js'
 
 class TeacherAssignmentRepository {
@@ -7,6 +10,7 @@ class TeacherAssignmentRepository {
             return await TeacherAssignment.create(TeacherAssignmentData);
         } catch (error) {
             console.log('Save Error: ', error);
+            throw error;
         }
     } 
 
@@ -21,25 +25,38 @@ class TeacherAssignmentRepository {
                 limit: PAGE_LIMIT,
                 offset: offset,
                 order: [['createdAt', 'DESC']],
+                include: [
+                { model: Course, attributes: ['grade', 'division'] },
+                { model: Subject, attributes: ['name'] },
+                { model: User, attributes: ['lastName', 'firstName'] }
+            ]
             });
         } catch (error) {
             console.log('Find Error: ', error);
+            throw error;
         }      
     }
 
     async findTeacherAssignmentById(id) {
-        try {
-            return await TeacherAssignment.findByPk(id);    
-        } catch (error) {
-            console.log('Find Error: ', error);
-        }       
-    }
-
+    try {
+        return await TeacherAssignment.findByPk(id, { 
+            include: [
+                { model: Course, attributes: ['grade', 'division'] },
+                { model: Subject, attributes: ['name'] },
+                { model: User, attributes: ['lastName', 'firstName'] }
+            ]
+        });    
+    } catch (error) {
+        console.error('Find Error: ', error);
+        throw error;
+    }       
+}
     async findTeacherAssignmentByUser(useIrd) {
         try {
             return await TeacherAssignment.findAll({where: {teacherId: userId}});    
         } catch (error) {
             console.log('Find Error: ', error);
+            throw error;
         }       
     }
 
@@ -51,6 +68,7 @@ class TeacherAssignmentRepository {
             return updated;
         } catch (error) {
             console.log('Update Error: ', error);
+            throw error;
         }     
     }
 
@@ -60,6 +78,7 @@ class TeacherAssignmentRepository {
             return deleted > 0;
         } catch (error) {
             console.log('Delete Error: ', error);
+            throw error;
         }
     }
 }
