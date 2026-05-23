@@ -7,7 +7,7 @@ const saveUser = async (req, res) => {
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-}; 
+} 
 
 const listUsers = async (req, res)=>{
     try {
@@ -40,7 +40,7 @@ const updateUser = async (req, res) => {
         if (result.error) {
             return res.status(400).json({ message: result.error });
         }
-        res.status(200).json({ cliente: result.cliente, message: result.message });
+        res.status(200).json({ message: result.message, user: result.user });
     } catch (error) {
         res.status(400).json({message: error.message});
     }    

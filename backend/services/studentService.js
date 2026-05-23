@@ -13,7 +13,7 @@ const createStudent = async(student)=>{
         if(studentFound) throw new Error('Student already exists');
 
         const courseFound = await CourseRepository.getById(student.courseId);
-        if(courseFound) throw new Error('Course not found');
+        if(!courseFound) throw new Error('Course not found');
 
         const stu = {
             birthDate: student.birthDate,

@@ -8,6 +8,7 @@ class StudentRepository {
             return await Student.create(StudentData);
         } catch (error) {
             console.log('Save Error: ', error);
+            throw error;
         }
     } 
 
@@ -29,6 +30,7 @@ class StudentRepository {
         });
         } catch (error) {
             console.log('Find Error: ', error);
+            throw error;
         }      
     }
 
@@ -42,6 +44,7 @@ class StudentRepository {
         });    
         } catch (error) {
             console.log('Find Error: ', error);
+            throw error;
         }       
     }
 
@@ -50,6 +53,7 @@ class StudentRepository {
             return await Student.findOne({where:{userId: id}});    
         } catch (error) {
             console.log('Find Error: ', error);
+            throw error;
         }       
     }
 
@@ -60,6 +64,7 @@ class StudentRepository {
         return updated;
         } catch (error) {
             console.log('Update Error: ', error);
+            throw error;
         }     
     }
 
@@ -69,6 +74,7 @@ class StudentRepository {
         return deleted > 0;
         } catch (error) {
             console.log('Delete Error: ', error);
+            throw error;
         }
     }
 }
