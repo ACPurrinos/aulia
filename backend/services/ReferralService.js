@@ -1,16 +1,15 @@
 import ReferralRepository from '../repositories/ReferralRepository.js';
-import CaseFileRepository from '../repositories/CaseFileRepository.js';
+import CaseFileService from './CaseFileService.js';
 import ReferralHistoryService from './ReferralHistoryService.js';
 
 import {
   ReferralStatusEnum,
-  ReferralActionEnum,
-  CaseFileStatus
+  ReferralActionEnum
 } from '../enums/index.js';
 
 class ReferralService {
 
-  // DOCENTE crea derivación
+  // CREAR derivación (docente)
   async createReferral(referralData, userId) {
 
     try {
@@ -24,7 +23,7 @@ class ReferralService {
       await ReferralHistoryService.registerHistory({
         referralId: referral.id,
         action: ReferralActionEnum.CREATED,
-        notes: 'Derivación creada.',
+        notes: 'Derivación creada',
         changedBy: userId
       });
 
@@ -35,56 +34,30 @@ class ReferralService {
     }
   }
 
-  // GABINETE acepta derivación
+  // ACEPTAR derivación (gabinete)
   async acceptReferral(referralId, userId, notes = '') {
 
     try {
 
-      const referral = await ReferralRepository.getById(referralId);
+      const referral = await ReferralRepository.findById(referralId);
 
-      if (!referral) {
-        throw new Error('Referral not found.');
-      }
+      if (!referral) throw new Error('Referral not found');
 
       if (referral.status !== ReferralStatusEnum.PENDING) {
-        throw new Error('Referral has already been processed.');
+        throw new Error('Referral already processed');
       }
 
-      // Buscar legajo único del alumno
-      let caseFile = await CaseFileRepository.getByStudentId(
+      const caseFile = await CaseFileService.getOrCreateByStudent(
         referral.studentId
       );
 
-      // Si no existe → crear
-      if (!caseFile) {
+      const updated = await ReferralRepository.update(referralId, {
+        status: ReferralStatusEnum.IN_PROGRESS,
+        reviewedAt: new Date(),
+        reviewedBy: userId,
+        caseFileId: caseFile.id
+      });
 
-        caseFile = await CaseFileRepository.create({
-          studentId: referral.studentId
-        });
-
-      }
-
-      // Si existe pero estaba cerrado → reabrir
-      else if (caseFile.status === CaseFileStatus.CLOSED) {
-
-        await CaseFileRepository.update(caseFile.id, {
-          status: CaseFileStatus.OPEN
-        });
-
-      }
-
-      // Actualizar derivación
-      const updatedReferral = await ReferralRepository.update(
-        referralId,
-        {
-          status: ReferralStatusEnum.IN_PROGRESS,
-          reviewedAt: new Date(),
-          reviewedBy: userId,
-          caseFileId: caseFile.id
-        }
-      );
-
-      // Registrar historial
       await ReferralHistoryService.registerHistory({
         referralId,
         action: ReferralActionEnum.ACCEPTED,
@@ -92,36 +65,31 @@ class ReferralService {
         changedBy: userId
       });
 
-      return updatedReferral;
+      return updated;
 
     } catch (error) {
       throw new Error(`Error accepting referral: ${error.message}`);
     }
   }
 
-  // GABINETE rechaza derivación
-  async rejectReferral(referralId, userId, notes) {
+  // RECHAZAR derivación
+  async rejectReferral(referralId, userId, notes = '') {
 
     try {
 
-      const referral = await ReferralRepository.getById(referralId);
+      const referral = await ReferralRepository.findById(referralId);
 
-      if (!referral) {
-        throw new Error('Referral not found.');
-      }
+      if (!referral) throw new Error('Referral not found');
 
       if (referral.status !== ReferralStatusEnum.PENDING) {
-        throw new Error('Referral has already been processed.');
+        throw new Error('Referral already processed');
       }
 
-      const updatedReferral = await ReferralRepository.update(
-        referralId,
-        {
-          status: ReferralStatusEnum.REJECTED,
-          reviewedAt: new Date(),
-          reviewedBy: userId
-        }
-      );
+      const updated = await ReferralRepository.update(referralId, {
+        status: ReferralStatusEnum.REJECTED,
+        reviewedAt: new Date(),
+        reviewedBy: userId
+      });
 
       await ReferralHistoryService.registerHistory({
         referralId,
@@ -130,30 +98,31 @@ class ReferralService {
         changedBy: userId
       });
 
-      return updatedReferral;
+      return updated;
 
     } catch (error) {
       throw new Error(`Error rejecting referral: ${error.message}`);
     }
   }
 
-  // GABINETE solicita más información
-  async requestMoreInfo(referralId, userId, notes) {
+  // PEDIR más info
+  async requestMoreInfo(referralId, userId, notes = '') {
 
     try {
 
-      const referral = await ReferralRepository.getById(referralId);
+      const referral = await ReferralRepository.findById(referralId);
 
-      if (!referral) {
-        throw new Error('Referral not found.');
+      if (!referral) throw new Error('Referral not found');
+
+      if (referral.status === ReferralStatusEnum.CLOSED) {
+        throw new Error('Referral is closed');
       }
 
-      const updatedReferral = await ReferralRepository.update(
-        referralId,
-        {
-          status: ReferralStatusEnum.MORE_INFO
-        }
-      );
+      const updated = await ReferralRepository.update(referralId, {
+        status: ReferralStatusEnum.MORE_INFO,
+        reviewedAt: new Date(),
+        reviewedBy: userId
+      });
 
       await ReferralHistoryService.registerHistory({
         referralId,
@@ -162,12 +131,27 @@ class ReferralService {
         changedBy: userId
       });
 
-      return updatedReferral;
+      return updated;
 
     } catch (error) {
-      throw new Error(`Error requesting more information: ${error.message}`);
+      throw new Error(`Error requesting more info: ${error.message}`);
     }
   }
+
+  async getAllReferrals() {
+  return await ReferralRepository.findAll();
+}
+
+async getReferralById(id) {
+  const referral = await ReferralRepository.findById(id);
+
+  if (!referral) {
+    throw new Error('Referral not found');
+  }
+
+  return referral;
+}
+
 
 }
 

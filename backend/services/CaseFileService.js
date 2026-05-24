@@ -1,221 +1,90 @@
-import CaseFileRepository
-  from '../repositories/CaseFileRepository.js';
+import sequelize from '../data/db.js';
 
-import {
-  CaseFileStatus
-} from '../enums/index.js';
+import CaseFileRepository from '../repositories/CaseFileRepository.js';
+import { CaseFileStatus } from '../enums/index.js';
 
 class CaseFileService {
 
-  async createCaseFile(caseFileData) {
+  // crear legajo manual (si lo necesitás)
+  async createCaseFile(studentId) {
 
+    const t = await sequelize.transaction();
     try {
-
-      const existingCaseFile =
-        await CaseFileRepository.getByStudentId(
-          caseFileData.studentId
-        );
-
-      if (existingCaseFile) {
-        throw new Error(
-          'El alumno ya posee un legajo.'
-        );
+      const existing = await CaseFileRepository.getByStudentId(studentId, {
+        transaction: t
+      });
+      if (existing) {
+        throw new Error('CaseFile already exists for this student');
       }
-
-      return await CaseFileRepository.create(
-        caseFileData
-      );
-
-    } catch (error) {
-
-      throw new Error(
-        `Error creating case file: ${error.message}`
-      );
-    }
-  }
-
-  async getCaseFileById(id) {
-
-    try {
-
-      const caseFile =
-        await CaseFileRepository.getById(id);
-
-      if (!caseFile) {
-        throw new Error(
-          'Legajo no encontrado.'
-        );
-      }
-
+      const caseFile = await CaseFileRepository.create({
+        studentId,
+        status: CaseFileStatus.OPEN
+      }, { transaction: t });
+      await t.commit();
       return caseFile;
 
     } catch (error) {
-
-      throw new Error(
-        `Error fetching case file: ${error.message}`
-      );
+      await t.rollback();
+      throw new Error(`Error creating case file: ${error.message}`);
     }
   }
 
-  async getStudentCaseFile(studentId) {
-
+  // obtener o crear 
+  async getOrCreateByStudent(studentId) {
+    const t = await sequelize.transaction();
     try {
-
-      const caseFile =
-        await CaseFileRepository.getByStudentId(
-          studentId
-        );
-
+      let caseFile = await CaseFileRepository.getByStudentId(
+        studentId,
+        { transaction: t }
+      );
       if (!caseFile) {
-        throw new Error(
-          'El alumno no posee legajo.'
-        );
-      }
-
-      return caseFile;
-
-    } catch (error) {
-
-      throw new Error(
-        `Error fetching student case file: ${error.message}`
-      );
-    }
-  }
-
-  async getCaseFileHistory(id) {
-
-    try {
-
-      const caseFile =
-        await CaseFileRepository.getFullHistoryById(id);
-
-      if (!caseFile) {
-        throw new Error(
-          'Legajo no encontrado.'
-        );
-      }
-
-      return caseFile;
-
-    } catch (error) {
-
-      throw new Error(
-        `Error fetching case history: ${error.message}`
-      );
-    }
-  }
-
-  async getOpenCaseFiles() {
-
-    try {
-
-      return await CaseFileRepository.getAllOpen();
-
-    } catch (error) {
-
-      throw new Error(
-        `Error fetching open case files: ${error.message}`
-      );
-    }
-  }
-
-  async updateCaseFile(id, updateData) {
-
-    try {
-
-      const updatedCaseFile =
-        await CaseFileRepository.update(
-          id,
-          updateData
-        );
-
-      if (!updatedCaseFile) {
-        throw new Error(
-          'No se pudo actualizar el legajo.'
-        );
-      }
-
-      return updatedCaseFile;
-
-    } catch (error) {
-
-      throw new Error(
-        `Error updating case file: ${error.message}`
-      );
-    }
-  }
-
-  async closeCaseFile(id) {
-
-    try {
-
-      const caseFile =
-        await CaseFileRepository.getById(id);
-
-      if (!caseFile) {
-        throw new Error(
-          'Legajo no encontrado.'
-        );
-      }
-
-      if (
-        caseFile.status ===
-        CaseFileStatus.CLOSED
-      ) {
-        throw new Error(
-          'El legajo ya está cerrado.'
-        );
-      }
-
-      return await CaseFileRepository.update(
-        id,
-        {
-          status: CaseFileStatus.CLOSED
-        }
-      );
-
-    } catch (error) {
-
-      throw new Error(
-        `Error closing case file: ${error.message}`
-      );
-    }
-  }
-
-  async reopenCaseFile(id) {
-
-    try {
-
-      const caseFile =
-        await CaseFileRepository.getById(id);
-
-      if (!caseFile) {
-        throw new Error(
-          'Legajo no encontrado.'
-        );
-      }
-
-      if (
-        caseFile.status ===
-        CaseFileStatus.OPEN
-      ) {
-        throw new Error(
-          'El legajo ya está abierto.'
-        );
-      }
-
-      return await CaseFileRepository.update(
-        id,
-        {
+        caseFile = await CaseFileRepository.create({
+          studentId,
           status: CaseFileStatus.OPEN
-        }
-      );
+        }, { transaction: t });
+      }
+      await t.commit();
+      return caseFile;
+    } catch (error) {
+      await t.rollback();
+      throw new Error(`Error getting/creating case file: ${error.message}`);
+    }
+  }
+
+  // reabrir legajo
+  async reopenCaseFile(caseFileId, userId) {
+    try {
+      const caseFile = await CaseFileRepository.findById(caseFileId);
+      if (!caseFile) {
+        throw new Error('CaseFile not found');
+      }
+
+      if (caseFile.status === CaseFileStatus.OPEN) {
+        return caseFile;
+      }
+
+      return await CaseFileRepository.update(caseFileId, {
+        status: CaseFileStatus.OPEN
+      });
+    } catch (error) {
+      throw new Error(`Error reopening case file: ${error.message}`);
+    }
+  }
+
+  // cerrar legajo
+  async closeCaseFile(caseFileId) {
+    try {
+      const caseFile = await CaseFileRepository.findById(caseFileId);
+
+      if (!caseFile) {
+        throw new Error('CaseFile not found');
+      }
+      return await CaseFileRepository.update(caseFileId, {
+        status: CaseFileStatus.CLOSED
+      });
 
     } catch (error) {
-
-      throw new Error(
-        `Error reopening case file: ${error.message}`
-      );
+      throw new Error(`Error closing case file: ${error.message}`);
     }
   }
 }

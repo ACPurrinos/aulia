@@ -1,46 +1,55 @@
-// repositories/DocumentRepository.js
-
-import {
-  Document,
-  Student,
-  Intervention,
-  User
-} from '../models/index.js';
+import {Document, CaseFile, Student, Intervention, User, Course} from '../models/index.js';
 
 class DocumentRepository {
 
   async create(documentData) {
-
     try {
-
       return await Document.create(documentData);
-
     } catch (error) {
-
-      throw new Error(`Error creating document: ${error.message}`);
+      throw new Error(
+        `Error creating document: ${error.message}`
+      );
     }
   }
 
-  async getById(id) {
-
+  async findById(id) {
     try {
-
       return await Document.findByPk(id, {
         include: [
           {
-            model: Student,
-            attributes: ['id'],
+            model: CaseFile,
             include: [
               {
-                model: User,
+                model: Student,
                 attributes: [
                   'id',
-                  'firstName',
-                  'lastName'
+                  'birthDate'
+                ],
+                include: [
+                  {
+                    model: User,
+                    attributes: [
+                      'id',
+                      'firstName',
+                      'lastName'
+                    ]
+                  },
+
+                  {
+                    model: Course,
+                    attributes: [
+                      'id',
+                      'level',
+                      'grade',
+                      'academicYear',
+                      'division'
+                    ]
+                  }
                 ]
               }
             ]
           },
+
           {
             model: Intervention,
             required: false
@@ -55,26 +64,26 @@ class DocumentRepository {
             ]
           }
         ]
+
       });
 
     } catch (error) {
-
-      throw new Error(`Error fetching document: ${error.message}`);
+      throw new Error(
+        `Error fetching document ${id}: ${error.message}`
+      );
     }
   }
 
-  async getByStudentId(studentId) {
-
+  async findByCaseFileId(caseFileId) {
     try {
-
       return await Document.findAll({
         where: {
-          studentId
+          caseFileId
         },
         include: [
           {
             model: User,
-            as: 'uploader', // --> Andi!!! revisar alias
+            as: 'uploader',
             attributes: [
               'id',
               'firstName',
@@ -87,17 +96,16 @@ class DocumentRepository {
           ['createdAt', 'DESC']
         ]
       });
-
     } catch (error) {
-
-      throw new Error(`Error fetching student documents: ${error.message}`);
+      throw new Error(
+        `Error fetching case file documents: ${error.message}`
+      );
     }
   }
 
-  async getByInterventionId(interventionId) {
+  async findByInterventionId(interventionId) {
 
     try {
-
       return await Document.findAll({
         where: {
           interventionId
@@ -105,7 +113,7 @@ class DocumentRepository {
         include: [
           {
             model: User,
-            as: 'uploader', // acá también
+            as: 'uploader',
             attributes: [
               'id',
               'firstName',
@@ -113,52 +121,51 @@ class DocumentRepository {
             ]
           }
         ],
+
         order: [
           ['createdAt', 'DESC']
         ]
       });
 
     } catch (error) {
-
-      throw new Error(`Error fetching intervention documents: ${error.message}`);
+      throw new Error(
+        `Error fetching intervention documents: ${error.message}`
+      );
     }
   }
 
   async update(id, updateData) {
-
     try {
-
-      const document = await Document.findByPk(id);
-
+      const document =
+        await Document.findByPk(id);
       if (!document) {
         return null;
       }
-
       return await document.update(updateData);
-
     } catch (error) {
-
-      throw new Error(`Error updating document: ${error.message}`);
+      throw new Error(
+        `Error updating document ${id}: ${error.message}`
+      );
     }
   }
 
-  async delete(id) {
+  // Soft delete por paranoid
+  async archive(id) {
 
     try {
-
-      const document = await Document.findByPk(id);
-
+      const document =
+        await Document.findByPk(id);
       if (!document) {
         return false;
       }
 
       await document.destroy();
-
       return true;
-
     } catch (error) {
 
-      throw new Error(`Error deleting document: ${error.message}`);
+      throw new Error(
+        `Error archiving document ${id}: ${error.message}`
+      );
     }
   }
 }

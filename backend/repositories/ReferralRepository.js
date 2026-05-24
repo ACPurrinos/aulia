@@ -2,119 +2,170 @@ import { Referral, Student, User, CaseFile } from '../models/index.js';
 
 class ReferralRepository {
 
-  async create(referralData) {
+  async create(referralData, options) {
     try {
-      return await Referral.create(referralData);
-
+      return await Referral.create(referralData, options);
     } catch (error) {
-      throw new Error(`Error creating referral: ${error.message}`);
+      throw new Error(
+        `Error creating referral: ${error.message}`
+      );
     }
   }
 
-  async getAll() {
+  async findAll(options) {
     try {
-
       return await Referral.findAll({
+        ...options,
         include: [
           {
             model: Student,
-            attributes: ['id'],
+            attributes: [
+              'id',
+              'birthDate',
+              'active'
+            ],
             include: [
               {
                 model: User,
-                attributes: ['id', 'firstName', 'lastName']
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
               }
             ]
           },
+
           {
             model: User,
             as: 'referrer',
-            attributes: ['id', 'firstName', 'lastName']
+            attributes: [
+              'id',
+              'firstName',
+              'lastName'
+            ]
           },
+
           {
             model: CaseFile,
-            attributes: ['id', 'status'],
+            attributes: [
+              'id',
+              'status',
+              'priority'
+            ],
             required: false
           }
         ],
-        order: [['createdAt', 'DESC']]
+
+        order: [
+          ['createdAt', 'DESC']
+        ]
       });
 
     } catch (error) {
-      throw new Error(`Error fetching referrals: ${error.message}`);
+      throw new Error(
+        `Error fetching referrals: ${error.message}`
+      );
     }
   }
 
-  async getById(id) {
+  async findById(id, options) {
     try {
-
       return await Referral.findByPk(id, {
+        ...options,
         include: [
           {
             model: Student,
-            attributes: ['id'],
+            attributes: [
+              'id',
+              'birthDate',
+              'active'
+            ],
             include: [
               {
                 model: User,
-                attributes: ['id', 'firstName', 'lastName']
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
               }
             ]
           },
+
           {
             model: User,
             as: 'referrer',
-            attributes: ['id', 'firstName', 'lastName']
+            attributes: [
+              'id',
+              'firstName',
+              'lastName'
+            ]
           },
+
           {
             model: User,
             as: 'reviewer',
-            attributes: ['id', 'firstName', 'lastName'],
+            attributes: [
+              'id',
+              'firstName',
+              'lastName'
+            ],
             required: false
           },
+
           {
             model: CaseFile,
-            attributes: ['id', 'status'],
+            attributes: [
+              'id',
+              'status',
+              'priority'
+            ],
             required: false
           }
         ]
       });
 
     } catch (error) {
-      throw new Error(`Error fetching referral: ${error.message}`);
+      throw new Error(
+        `Error fetching referral ${id}: ${error.message}`
+      );
     }
   }
 
-  async update(id, updateData) {
+  async update(id, updateData, options) {
     try {
-
-      const referral = await Referral.findByPk(id);
+      const referral = await Referral.findByPk(id, options);
 
       if (!referral) {
         return null;
       }
 
-      return await referral.update(updateData);
+      return await referral.update(updateData, options);
 
     } catch (error) {
-      throw new Error(`Error updating referral: ${error.message}`);
+      throw new Error(
+        `Error updating referral ${id}: ${error.message}`
+      );
     }
   }
 
-  async delete(id) {
+  async archive(id, options) {
     try {
-
-      const referral = await Referral.findByPk(id);
+      const referral = await Referral.findByPk(id, options);
 
       if (!referral) {
         return false;
       }
 
-      await referral.destroy();
+      await referral.destroy(options);
 
       return true;
 
     } catch (error) {
-      throw new Error(`Error deleting referral: ${error.message}`);
+      throw new Error(
+        `Error archiving referral ${id}: ${error.message}`
+      );
     }
   }
 }

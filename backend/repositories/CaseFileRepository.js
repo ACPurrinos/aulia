@@ -1,213 +1,59 @@
-import {
-  CaseFile,
-  Student,
-  Course,
-  Referral,
-  Intervention,
-  User
-} from '../models/index.js';
-
-import {
-  CaseFileStatus
-} from '../enums/index.js';
+import { CaseFile, Student } from '../models/index.js';
 
 class CaseFileRepository {
 
-  async create(caseFileData) {
-
+  async create(data, options) {
     try {
-
-      return await CaseFile.create(caseFileData);
-
+      return await CaseFile.create(data, options);
     } catch (error) {
-
-      throw new Error(
-        `Error creating case file: ${error.message}`
-      );
+      throw new Error(`Error creating case file: ${error.message}`);
     }
   }
 
-  async getById(id) {
-
+  async findById(id, options) {
     try {
-
-      return await CaseFile.findByPk(id);
-
+      return await CaseFile.findByPk(id, options);
     } catch (error) {
-
-      throw new Error(
-        `Error fetching case file: ${error.message}`
-      );
+      throw new Error(`Error fetching case file: ${error.message}`);
     }
   }
 
-  async getByStudentId(studentId) {
-
+  async getByStudentId(studentId, options) {
     try {
-
       return await CaseFile.findOne({
-        where: { studentId }
+        where: { studentId },
+        ...options
       });
-
     } catch (error) {
-
-      throw new Error(
-        `Error fetching student case file: ${error.message}`
-      );
+      throw new Error(`Error fetching student case file: ${error.message}`);
     }
   }
 
-  async getFullHistoryById(id) {
-
+  async update(id, updateData, options) {
     try {
+      const caseFile = await CaseFile.findByPk(id, options);
 
-      return await CaseFile.findByPk(id, {
+      if (!caseFile) return null;
 
-        include: [
-
-          {
-            model: Student,
-            attributes: [
-              'id',
-              'birthDate'
-            ],
-
-            include: [
-              {
-                model: User,
-                attributes: [
-                  'id',
-                  'firstName',
-                  'lastName'
-                ]
-              },
-              {
-                model: Course,
-                attributes: [
-                  'id',
-                  'level',
-                  'grade',
-                  'division'
-                ]
-              }
-            ]
-          },
-
-          {
-            model: Intervention,
-
-            include: [
-              {
-                model: User,
-                attributes: [
-                  'id',
-                  'firstName',
-                  'lastName'
-                ]
-              }
-            ],
-
-            separate: true,
-
-            order: [
-              ['interventionDate', 'DESC']
-            ]
-          }
-
-        ]
-
-      });
+      return await caseFile.update(updateData, options);
 
     } catch (error) {
-
-      throw new Error(
-        `Error fetching case file history: ${error.message}`
-      );
+      throw new Error(`Error updating case file: ${error.message}`);
     }
   }
 
-  async getAllOpen() {
-
+  async archive(id, options) {
     try {
+      const caseFile = await CaseFile.findByPk(id, options);
 
-      return await CaseFile.findAll({
+      if (!caseFile) return false;
 
-        where: {
-          status: CaseFileStatus.OPEN
-        },
-
-        include: [
-          {
-            model: Student,
-            attributes: ['id'],
-            include: [
-              {
-                model: User,
-                attributes: [
-                  'id',
-                  'firstName',
-                  'lastName'
-                ]
-              }
-            ]
-          }
-        ],
-
-        order: [
-          ['updatedAt', 'DESC']
-        ]
-
-      });
-
-    } catch (error) {
-
-      throw new Error(
-        `Error fetching open case files: ${error.message}`
-      );
-    }
-  }
-
-  async update(id, updateData) {
-
-    try {
-
-      const caseFile =
-        await CaseFile.findByPk(id);
-
-      if (!caseFile) {
-        return null;
-      }
-
-      return await caseFile.update(updateData);
-
-    } catch (error) {
-
-      throw new Error(
-        `Error updating case file: ${error.message}`
-      );
-    }
-  }
-
-  async delete(id) {
-
-    try {
-
-      const caseFile =
-        await CaseFile.findByPk(id);
-
-      if (!caseFile) {
-        return false;
-      }
-
-      await caseFile.destroy();
+      await caseFile.destroy(options);
 
       return true;
 
     } catch (error) {
-
-      throw new Error(
-        `Error deleting case file: ${error.message}`
-      );
+      throw new Error(`Error archiving case file: ${error.message}`);
     }
   }
 }

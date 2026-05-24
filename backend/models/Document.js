@@ -22,32 +22,28 @@ const Document = sequelize.define('Document', {
     }
   },
 
-  // Identificador único del archivo en almacenamiento
-  // (AWS S3, Cloudinary, local storage, etc.)
+  // Identificador único del storage
   storageKey: {
     type: DataTypes.STRING(255),
     allowNull: false,
     unique: true
   },
 
-  // Nombre original del archivo subido
+  // Nombre original del archivo
   originalName: {
     type: DataTypes.STRING(255),
     allowNull: true
   },
 
   // MIME type
-  // Ejemplo:
-  // application/pdf
-  // image/png
   mimeType: {
-    type: DataTypes.STRING(100),
+    type: DataTypes.STRING(255),
     allowNull: true
   },
 
   // Tamaño en bytes
   fileSize: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     allowNull: false,
     validate: {
       min: 1
@@ -63,46 +59,63 @@ const Document = sequelize.define('Document', {
     defaultValue: DocumentCategories.OTHER
   },
 
-  // Fecha REAL del documento
-  // (no necesariamente la fecha de subida)
+  // Fecha real del documento
   documentDate: {
     type: DataTypes.DATE,
     allowNull: true
   },
 
-  // Alumno al que pertenece
-  studentId: {
+  // Todo documento pertenece al legajo
+  caseFileId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Student',
+      model: 'CaseFile',
       key: 'id'
-    }
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
   },
 
-  // Intervención asociada (opcional)
+  // Opcionalmente asociado a una intervención
   interventionId: {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
       model: 'Intervention',
       key: 'id'
-    }
+    },
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE'
   },
 
-  // Usuario que subió el documento
-  uploadedBy: {
+  // Usuario que cargó el documento
+  uploadedByUserId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: 'User',
       key: 'id'
-    }
+    },
+    onDelete: 'RESTRICT',
+    onUpdate: 'CASCADE'
   }
 
 }, {
   timestamps: true,
-  paranoid: true
+  paranoid: true,
+
+  indexes: [
+    {
+      fields: ['caseFileId']
+    },
+    {
+      fields: ['interventionId']
+    },
+    {
+      fields: ['category']
+    }
+  ]
 });
 
 export default Document;

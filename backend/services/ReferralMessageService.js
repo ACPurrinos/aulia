@@ -1,91 +1,76 @@
 import ReferralMessageRepository from '../repositories/ReferralMessageRepository.js';
-
 import ReferralRepository from '../repositories/ReferralRepository.js';
 
 class ReferralMessageService {
 
-  async sendMessage(messageData, userId) {
+  // enviar mensaje
+  async sendMessage(data, userId) {
 
     try {
 
-      const referral = await ReferralRepository.getById(
-        messageData.referralId
-      );
-
-      if (!referral) {
-        throw new Error('Referral not found.');
+      if (!data.referralId) {
+        throw new Error('referralId is required');
       }
 
-      return await ReferralMessageRepository.create({
-        referralId: messageData.referralId,
-        userId,
-        message: messageData.message
+      if (!data.message || data.message.trim().length === 0) {
+        throw new Error('message is required');
+      }
+
+      const referral = await ReferralRepository.findById(data.referralId);
+
+      if (!referral) {
+        throw new Error('Referral not found');
+      }
+
+      const message = await ReferralMessageRepository.create({
+        referralId: data.referralId,
+        message: data.message,
+        userId
       });
 
+      return message;
+
     } catch (error) {
-
-      throw new Error(
-        `Error sending message: ${error.message}`
-      );
-
+      throw new Error(`Error sending referral message: ${error.message}`);
     }
   }
 
-  async getConversation(referralId) {
+  // obtener chat completo
+  async getMessagesByReferralId(referralId) {
 
     try {
 
-      const referral = await ReferralRepository.getById(
-        referralId
-      );
-
-      if (!referral) {
-        throw new Error('Referral not found.');
+      if (!referralId) {
+        throw new Error('referralId is required');
       }
 
-      return await ReferralMessageRepository.getByReferralId(
-        referralId
-      );
+      return await ReferralMessageRepository.getByReferralId(referralId);
 
     } catch (error) {
-
-      throw new Error(
-        `Error fetching conversation: ${error.message}`
-      );
-
+      throw new Error(`Error fetching referral messages: ${error.message}`);
     }
   }
 
-  async deleteMessage(messageId, userId) {
+  // eliminar mensaje (soft delete si paranoid)
+  async deleteMessage(id, userId) {
 
     try {
 
-      const message = await ReferralMessageRepository.getById(
-        messageId
-      );
+      const message = await ReferralMessageRepository.getById(id);
 
       if (!message) {
-        throw new Error('Message not found.');
+        throw new Error('Message not found');
       }
 
-      // solo el autor puede borrar
+      // opcional: validar autor
       if (message.userId !== userId) {
-        throw new Error('Unauthorized action.');
+        throw new Error('Not authorized to delete this message');
       }
 
-      await ReferralMessageRepository.delete(messageId);
-
-      return {
-        success: true,
-        message: 'Message deleted successfully.'
-      };
+      return await ReferralMessageRepository.delete(id);
 
     } catch (error) {
-
-      throw new Error(
-        `Error deleting message: ${error.message}`
-      );
-
+      throw new Error(`Error deleting message: ${error.message}`);
     }
   }
 }

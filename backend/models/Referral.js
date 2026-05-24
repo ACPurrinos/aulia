@@ -24,7 +24,7 @@ const Referral = sequelize.define('Referral', {
     defaultValue: ReferralStatusEnum.PENDING
   },
 
-  // === COLUMNAS ESENCIALES PARA PASAR LOS DATOS ===
+
   studentId: {
     type: DataTypes.INTEGER,
     allowNull: false,

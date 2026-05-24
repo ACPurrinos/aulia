@@ -6,5 +6,6 @@ export const CaseFilePriority = Object.freeze({
 
 export const CaseFileStatus = Object.freeze({
   OPEN: 'Abierto',
-  CLOSED: 'Cerrado'
+  CLOSED: 'Cerrado',
+  ARCHIVED: 'Archivado'
 });

@@ -1,122 +1,113 @@
-// services/DocumentService.js
-
 import DocumentRepository from '../repositories/DocumentRepository.js';
+import CaseFileRepository from '../repositories/CaseFileRepository.js';
+import InterventionRepository from '../repositories/InterventionRepository.js';
 
 class DocumentService {
 
-  async uploadDocument(documentData) {
+  // CREAR DOCUMENTO
+  async createDocument(data, userId) {
 
     try {
 
-      if (!documentData.fileName) {
-        throw new Error('El nombre del archivo es obligatorio.');
+      if (!data.fileName) {
+        throw new Error('fileName is required');
+      }
+      if (!data.storageKey) {
+        throw new Error('storageKey is required');
+      }
+      if (!data.caseFileId) {
+        throw new Error('caseFileId is required');
+      }
+      if (!data.fileSize || data.fileSize <= 0) {
+        throw new Error('fileSize must be greater than 0');
       }
 
-      if (!documentData.storageKey) {
-        throw new Error('La clave de almacenamiento es obligatoria.');
+      // validar CaseFile
+      const caseFile = await CaseFileRepository.findById(data.caseFileId);
+      if (!caseFile) {
+        throw new Error('CaseFile not found');
+      }
+      // si viene interventionId, validar
+      if (data.interventionId) {
+        const intervention = await InterventionRepository.findById(
+          data.interventionId
+        );
+        if (!intervention) {
+          throw new Error('Intervention not found');
+        }
       }
 
-      if (!documentData.fileSize) {
-        throw new Error('El tamaño del archivo es obligatorio.');
-      }
-
-      if (!documentData.studentId) {
-        throw new Error('El alumno es obligatorio.');
-      }
-
-      if (!documentData.uploadedBy) {
-        throw new Error('El usuario que sube el archivo es obligatorio.');
-      }
-
-      return await DocumentRepository.create(documentData);
-
-    } catch (error) {
-
-      throw new Error(`Error uploading document: ${error.message}`);
-    }
-  }
-
-  async getDocumentById(id) {
-
-    try {
-
-      const document = await DocumentRepository.getById(id);
-
-      if (!document) {
-        throw new Error('Documento no encontrado.');
-      }
-
+      // crear documento
+      const document = await DocumentRepository.create({
+        ...data,
+        uploadedByUserId: userId
+      });
       return document;
 
     } catch (error) {
-
+      throw new Error(`Error creating document: ${error.message}`);
+    }
+  }
+  // OBTENER POR ID
+  async getDocumentById(id) {
+    try {
+      const document = await DocumentRepository.findById(id);
+      if (!document) {
+        throw new Error('Document not found');
+      }
+      return document;
+    } catch (error) {
       throw new Error(`Error fetching document: ${error.message}`);
     }
   }
 
-  async getStudentDocuments(studentId) {
-
+  // DOCUMENTOS POR CASEFILE
+  async getByCaseFile(caseFileId) {
     try {
-
-      return await DocumentRepository.getByStudentId(studentId);
-
+      if (!caseFileId) {
+        throw new Error('caseFileId is required');
+      }
+      return await DocumentRepository.findByCaseFileId(caseFileId);
     } catch (error) {
-
-      throw new Error(`Error fetching student documents: ${error.message}`);
+      throw new Error(`Error fetching documents by casefile: ${error.message}`);
     }
   }
 
-  async getInterventionDocuments(interventionId) {
-
+  // DOCUMENTOS POR INTERVENCIÓN
+  async getByIntervention(interventionId) {
     try {
-
-      return await DocumentRepository.getByInterventionId(interventionId);
+      if (!interventionId) {
+        throw new Error('interventionId is required');
+      }
+      return await DocumentRepository.findByInterventionId(interventionId);
 
     } catch (error) {
-
       throw new Error(`Error fetching intervention documents: ${error.message}`);
     }
   }
 
-  async updateDocument(id, updateData) {
-
+  // ACTUALIZAR METADATA 
+  async updateDocument(id, data) {
     try {
-
-      const updatedDocument =
-        await DocumentRepository.update(
-          id,
-          updateData
-        );
-
-      if (!updatedDocument) {
-        throw new Error('Documento no encontrado.');
+      const document = await DocumentRepository.findById(id);
+      if (!document) {
+        throw new Error('Document not found');
       }
-
-      return updatedDocument;
-
+      return await DocumentRepository.update(id, data);
     } catch (error) {
-
       throw new Error(`Error updating document: ${error.message}`);
     }
   }
 
+  // ELIMINAR DOCUMENTO (soft delete)
   async deleteDocument(id) {
-
     try {
-
-      const deleted = await DocumentRepository.delete(id);
-
-      if (!deleted) {
-        throw new Error('Documento no encontrado.');
+      const document = await DocumentRepository.findById(id);
+      if (!document) {
+        throw new Error('Document not found');
       }
-
-      return {
-        success: true,
-        message: 'Documento eliminado correctamente.'
-      };
-
+      return await DocumentRepository.archive(id);
     } catch (error) {
-
       throw new Error(`Error deleting document: ${error.message}`);
     }
   }

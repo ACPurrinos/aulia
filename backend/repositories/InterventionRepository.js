@@ -1,46 +1,60 @@
-// repositories/InterventionRepository.js
-
-import {
-  Intervention,
-  CaseFile,
-  Student,
-  User,
-  Document
-} from '../models/index.js';
+import {Intervention, CaseFile, Student, User, Document} from '../models/index.js';
 
 class InterventionRepository {
 
   async create(interventionData) {
     try {
-      return await Intervention.create(interventionData);
+      return await Intervention.create(
+        interventionData
+      );
     } catch (error) {
-      throw new Error(`Error creating intervention: ${error.message}`);
+      throw new Error(
+        `Error creating intervention: ${error.message}`
+      );
     }
   }
 
-  async getById(id) {
+  async findById(id) {
     try {
-
       return await Intervention.findByPk(id, {
         include: [
           {
             model: User,
             as: 'professional',
+
             attributes: [
               'id',
               'firstName',
               'lastName'
             ]
           },
+
           {
-            model: Document
+            model: Document,
+            attributes: [
+              'id',
+              'fileName',
+              'category',
+              'documentDate',
+              'createdAt'
+            ]
           },
+
           {
             model: CaseFile,
+            attributes: [
+              'id',
+              'status',
+              'priority'
+            ],
             include: [
               {
                 model: Student,
-                attributes: ['id'],
+                attributes: [
+                  'id',
+                  'birthDate',
+                  'active'
+                ],
                 include: [
                   {
                     model: User,
@@ -52,23 +66,27 @@ class InterventionRepository {
                   }
                 ]
               }
+
             ]
           }
         ]
+
       });
 
     } catch (error) {
-      throw new Error(`Error fetching intervention: ${error.message}`);
+      throw new Error(
+        `Error fetching intervention ${id}: ${error.message}`
+      );
     }
   }
 
-  async getByCaseFileId(caseFileId) {
+  async findByCaseFileId(caseFileId) {
     try {
-
       return await Intervention.findAll({
         where: {
           caseFileId
         },
+
         include: [
           {
             model: User,
@@ -79,30 +97,46 @@ class InterventionRepository {
               'lastName'
             ]
           }
+
         ],
+
         order: [
           ['interventionDate', 'DESC']
         ]
+
       });
+
     } catch (error) {
-      throw new Error(`Error fetching case interventions: ${error.message}`);
+
+      throw new Error(
+        `Error fetching case file interventions: ${error.message}`
+      );
     }
   }
 
-  async getByProfessionalId(professionalId) {
+  async findByProfessionalId(professionalId) {
     try {
 
       return await Intervention.findAll({
         where: {
           professionalId
         },
+
         include: [
           {
             model: CaseFile,
+            attributes: [
+              'id',
+              'status',
+              'priority'
+            ],
             include: [
               {
                 model: Student,
-                attributes: ['id'],
+                attributes: [
+                  'id',
+                  'birthDate'
+                ],
                 include: [
                   {
                     model: User,
@@ -114,41 +148,62 @@ class InterventionRepository {
                   }
                 ]
               }
+
             ]
           }
+
         ],
+
         order: [
           ['interventionDate', 'DESC']
         ]
+
       });
+
     } catch (error) {
-      throw new Error(`Error fetching professional interventions: ${error.message}`);
+
+      throw new Error(
+        `Error fetching professional interventions: ${error.message}`
+      );
     }
   }
 
   async update(id, updateData) {
     try {
-      const intervention = await Intervention.findByPk(id);
+
+      const intervention =
+        await Intervention.findByPk(id);
+
       if (!intervention) {
         return null;
       }
-      return await intervention.update(updateData);
+
+      return await intervention.update(
+        updateData
+      );
+
     } catch (error) {
-      throw new Error(`Error updating intervention: ${error.message}`);
+
+      throw new Error(
+        `Error updating intervention ${id}: ${error.message}`
+      );
     }
   }
 
-  async delete(id) {
+  // Soft delete por paranoid
+  async archive(id) {
     try {
-
-      const intervention = await Intervention.findByPk(id);
+      const intervention =
+        await Intervention.findByPk(id);
       if (!intervention) {
         return false;
       }
       await intervention.destroy();
       return true;
     } catch (error) {
-      throw new Error(`Error deleting intervention: ${error.message}`);
+      throw new Error(
+        `Error archiving intervention ${id}: ${error.message}`
+      );
     }
   }
 }
