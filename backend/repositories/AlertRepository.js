@@ -24,10 +24,16 @@ class AlertRepository {
         include: [
           {
             model: Student,
-            attributes: [
-              'id',
-              'firstName',
-              'lastName'
+            attributes: ['id'],
+            include: [
+              {
+                model: User,
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
+              }
             ]
           },
           {
@@ -66,10 +72,16 @@ class AlertRepository {
         include: [
           {
             model: Student,
-            attributes: [
-              'id',
-              'firstName',
-              'lastName'
+            attributes: ['id'],
+            include: [
+              {
+                model: User,
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
+              }
             ]
           },
           {
@@ -104,10 +116,16 @@ class AlertRepository {
         include: [
           {
             model: Student,
-            attributes: [
-              'id',
-              'firstName',
-              'lastName'
+            attributes: ['id'],
+            include: [
+              {
+                model: User,
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
+              }
             ]
           }
         ],

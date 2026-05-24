@@ -18,7 +18,13 @@ class ReferralRepository {
         include: [
           {
             model: Student,
-            attributes: ['id', 'firstName', 'lastName']
+            attributes: ['id'],
+            include: [
+              {
+                model: User,
+                attributes: ['id', 'firstName', 'lastName']
+              }
+            ]
           },
           {
             model: User,
@@ -46,7 +52,13 @@ class ReferralRepository {
         include: [
           {
             model: Student,
-            attributes: ['id', 'firstName', 'lastName']
+            attributes: ['id'],
+            include: [
+              {
+                model: User,
+                attributes: ['id', 'firstName', 'lastName']
+              }
+            ]
           },
           {
             model: User,

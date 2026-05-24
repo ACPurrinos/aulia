@@ -28,7 +28,7 @@ class ReferralMessageRepository {
               'id',
               'firstName',
               'lastName',
-              'role'
+              'role'  /* role no es atributo del User, REVISAR */
             ]
           }
         ],
