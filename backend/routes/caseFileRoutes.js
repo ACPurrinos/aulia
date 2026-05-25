@@ -15,4 +15,6 @@ router.patch('/:id/close', CaseFileController.close);
 // reabrir legajo
 router.patch('/:id/reopen', CaseFileController.reopen);
 
+router.get('/:id', CaseFileController.getCaseFileById);
+
 export default router;

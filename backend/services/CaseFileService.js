@@ -104,6 +104,16 @@ class CaseFileService {
       throw new Error(`Error closing case file: ${error.message}`);
     }
   }
+
+  async getById(id) {
+  try {
+    return await CaseFileRepository.findById(id);
+  } catch (error) {
+    throw new Error(
+      `Error fetching case file: ${error.message}`
+    );
+  }
+}
 }
 
 export default new CaseFileService();
