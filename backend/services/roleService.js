@@ -1,9 +1,9 @@
 import RolRepository from "../repositories/RolRepository.js";
 
 
-const findAllRoles = async()=>{
+const findAllRoles = async(page = 1)=>{
     try {
-        const roles = await RolRepository.findAllRoles();
+        const roles = await RolRepository.findAllRoles(page);
         return roles;
     } catch (error) {
         throw new Error(error.message);

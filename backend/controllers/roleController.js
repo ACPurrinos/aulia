@@ -12,7 +12,8 @@ const findRoleById = async(req, res)=>{
 
 const getAllRoles = async(req, res)=>{
     try {
-        const roles = await roleService.findAllRoles();
+        const { page } = req.query;
+        const roles = await roleService.findAllRoles(page);
         if(roleService.length !== 0){
             res.status(200).json(roles);
         }else{

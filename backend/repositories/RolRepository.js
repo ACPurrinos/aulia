@@ -10,12 +10,11 @@ class RolRepository {
         }
     } 
 
-    async findAllRoles(){
+    async findAllRoles(page = 1){
         try {
             const PAGE_LIMIT = 10;
-        const DEFAULT_PAGE = 1;
 
-        const offset = (DEFAULT_PAGE - 1) * PAGE_LIMIT;
+        const offset = (page - 1) * PAGE_LIMIT;
         
         return await Role.findAndCountAll({
             limit: PAGE_LIMIT,
