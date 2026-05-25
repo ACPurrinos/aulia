@@ -32,7 +32,6 @@ class InterventionRepository {
 
           {
   model: Document,
-  as: 'documents',
   required:false,
   attributes: [
     'id',

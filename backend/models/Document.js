@@ -13,7 +13,6 @@ const Document = sequelize.define('Document', {
     autoIncrement: true
   },
 
-  // Nombre visible dentro del sistema
   fileName: {
     type: DataTypes.STRING(100),
     allowNull: false,
