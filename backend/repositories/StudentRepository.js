@@ -37,7 +37,7 @@ class StudentRepository {
 
     async updateStudent(id, data) {
         try {
-            const student = await this.findById(id);
+            const student = await this.findStudentById(id);
         if (!student) return null;
 
         return await Student.update(data);
@@ -55,3 +55,5 @@ class StudentRepository {
         }
     }
 }
+
+export default new StudentRepository();

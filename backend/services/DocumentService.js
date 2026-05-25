@@ -35,6 +35,13 @@ class DocumentService {
         if (!intervention) {
           throw new Error('Intervention not found');
         }
+        if (
+    intervention.caseFileId !== data.caseFileId
+  ) {
+    throw new Error(
+      'Intervention does not belong to this CaseFile'
+    );
+  }
       }
 
       // crear documento

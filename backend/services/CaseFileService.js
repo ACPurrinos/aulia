@@ -1,6 +1,7 @@
 import sequelize from '../data/db.js';
 
 import CaseFileRepository from '../repositories/CaseFileRepository.js';
+import StudentRepository from '../repositories/StudentRepository.js';
 import { CaseFileStatus } from '../enums/index.js';
 
 class CaseFileService {
@@ -12,6 +13,13 @@ class CaseFileService {
   const isExternalTransaction = !!options.transaction;
 
   try {
+    const student =
+        await StudentRepository.findStudentById(
+          studentId
+        );
+        if (!student) {
+        throw new Error('Student not found');
+      }
     const existing = await CaseFileRepository.getByStudentId(
       studentId,
       { transaction: t }
@@ -46,6 +54,14 @@ class CaseFileService {
   // obtener o crear 
   async getOrCreateByStudent(studentId, options = {}) {
   try {
+    const student =
+        await StudentRepository.findStudentById(
+          studentId
+        );
+
+      if (!student) {
+        throw new Error('Student not found');
+      }
     let caseFile = await CaseFileRepository.getByStudentId(
       studentId,
       options
@@ -105,15 +121,20 @@ class CaseFileService {
     }
   }
 
-  async getById(id) {
-  try {
-    return await CaseFileRepository.findById(id);
-  } catch (error) {
-    throw new Error(
-      `Error fetching case file: ${error.message}`
-    );
-  }
-}
-}
+   async getById(id) {
+
+    try {
+      const caseFile =
+        await CaseFileRepository.findById(id);
+      if (!caseFile) {
+        throw new Error('CaseFile not found');
+      }
+      return caseFile;
+    } catch (error) {
+      throw new Error(
+        `Error fetching case file: ${error.message}`
+      );
+    }
+  }}
 
 export default new CaseFileService();

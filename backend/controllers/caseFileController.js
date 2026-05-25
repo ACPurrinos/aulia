@@ -5,9 +5,7 @@ class CaseFileController {
   async create(req, res) {
 
     try {
-
       const { studentId } = req.body;
-
       // Validación básica
       if (!studentId) {
         return res.status(400).json({
@@ -25,7 +23,6 @@ class CaseFileController {
 
     } catch (error) {
 
-      // conflicto lógico
       if (
         error.message.includes('already exists')
       ) {
@@ -44,9 +41,7 @@ class CaseFileController {
   async getById(req, res) {
 
     try {
-
       const { studentId } = req.params;
-
       if (!studentId) {
         return res.status(400).json({
           message: 'studentId is required'
@@ -61,7 +56,6 @@ class CaseFileController {
       return res.json(caseFile);
 
     } catch (error) {
-
       return res.status(500).json({
         message: error.message
       });
