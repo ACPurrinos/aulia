@@ -35,7 +35,7 @@ class ReferralHistoryService {
       if (!referralId) {
         throw new Error('referralId is required');
       }
-      return await ReferralHistoryRepository.getByReferralId(referralId);
+      return await ReferralHistoryRepository.findByReferralId(referralId);
     } catch (error) {
       throw new Error(`Error fetching referral history: ${error.message}`);
     }

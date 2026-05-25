@@ -86,11 +86,7 @@ Intervention.belongsTo(User, {
   as: 'professional'
 });
 
-// Documentación de Alumnos e Intervenciones
 
-
-Intervention.hasMany(Document, { foreignKey: 'interventionId' });
-Document.belongsTo(Intervention, { foreignKey: 'interventionId' });
 
 // =========================
 // REFERRAL HISTORY
@@ -147,8 +143,15 @@ Alert.belongsTo(User, { foreignKey: 'createdById', as: 'creator' });
 Course.hasMany(Alert, { foreignKey: 'courseId' });
 Alert.belongsTo(Course, { foreignKey: 'courseId' });
 
-Intervention.hasMany(Document, { foreignKey: 'interventionId', as: 'documents' });
-Document.belongsTo(Intervention, { foreignKey: 'interventionId' });
+Intervention.hasMany(Document, {
+  foreignKey: 'interventionId',
+  as: 'documents'
+});
+
+Document.belongsTo(Intervention, {
+  foreignKey: 'interventionId',
+  as: 'intervention'
+});
 
 User.hasMany(Document, {
   foreignKey: 'uploadedBy',

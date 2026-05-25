@@ -44,7 +44,7 @@ class ReferralMessageService {
         throw new Error('referralId is required');
       }
 
-      return await ReferralMessageRepository.getByReferralId(referralId);
+      return await ReferralMessageRepository.findByReferralId(referralId);
 
     } catch (error) {
       throw new Error(`Error fetching referral messages: ${error.message}`);
