@@ -147,8 +147,8 @@ Alert.belongsTo(User, { foreignKey: 'createdById', as: 'creator' });
 Course.hasMany(Alert, { foreignKey: 'courseId' });
 Alert.belongsTo(Course, { foreignKey: 'courseId' });
 
-Intervention.hasMany(Alert, { foreignKey: 'interventionId' });
-Alert.belongsTo(Intervention, { foreignKey: 'interventionId' });
+Intervention.hasMany(Document, { foreignKey: 'interventionId', as: 'documents' });
+Document.belongsTo(Intervention, { foreignKey: 'interventionId' });
 
 User.hasMany(Document, {
   foreignKey: 'uploadedBy',
@@ -156,7 +156,7 @@ User.hasMany(Document, {
 });
 
 Document.belongsTo(User, {
-  foreignKey: 'uploadedByUserId',
+  foreignKey: 'uploadedBy',
   as: 'uploader'
 });
 

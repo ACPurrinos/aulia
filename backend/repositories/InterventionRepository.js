@@ -16,6 +16,7 @@ class InterventionRepository {
 
   async findById(id) {
     try {
+      console.log("DEBUG", Document.getTableName());
       return await Intervention.findByPk(id, {
         include: [
           {
@@ -30,15 +31,17 @@ class InterventionRepository {
           },
 
           {
-            model: Document,
-            attributes: [
-              'id',
-              'fileName',
-              'category',
-              'documentDate',
-              'createdAt'
-            ]
-          },
+  model: Document,
+  as: 'documents',
+  required:false,
+  attributes: [
+    'id',
+    'fileName',
+    'category',
+    'documentDate',
+    'createdAt'
+  ]
+},
 
           {
             model: CaseFile,
