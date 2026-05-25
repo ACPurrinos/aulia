@@ -13,9 +13,9 @@ const saveSubject = async(data)=>{
     }
 }
 
-const findAllSubjects = async()=>{
+const findAllSubjects = async(page = 1)=>{
     try {
-        const subjects = await SubjectRepository.findAllSubjects();
+        const subjects = await SubjectRepository.findAllSubjects(page);
         return subjects;
     } catch (error) {
         throw new Error(error.message); 

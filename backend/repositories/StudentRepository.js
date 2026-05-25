@@ -12,26 +12,61 @@ class StudentRepository {
         }
     } 
 
-    async findAllStudents(){
+    async findAllStudents(page = 1){
         try {
             const PAGE_LIMIT = 10;
-        const DEFAULT_PAGE = 1;
-
-        const offset = (DEFAULT_PAGE - 1) * PAGE_LIMIT;
-        
-        return await Student.findAndCountAll({
-            limit: PAGE_LIMIT,
-            offset: offset,
-            order: [['createdAt', 'DESC']],
-            include: [{
-                model: User,
-                attributes: ['firstName', 'lastName']
-            }]
-        });
+            const currentPage = Math.max(1, parseInt(page) || 1);
+            const offset = (page - 1) * PAGE_LIMIT;
+            
+            const { count, rows } = await Student.findAndCountAll({
+                limit: PAGE_LIMIT,
+                offset: offset,
+                order: [['createdAt', 'DESC']],
+                include: [{
+                    model: User,
+                    attributes: ['firstName', 'lastName']
+                }]
+            });
+            return {
+                data: rows,
+                totalItems: count,
+                totalPages: Math.ceil(count / PAGE_LIMIT),
+                currentPage,
+            };
         } catch (error) {
             console.log('Find Error: ', error);
             throw error;
         }      
+    }
+
+    async findActiveStudents(page = 1){
+        try {
+            const PAGE_LIMIT = 10;
+            const currentPage = Math.max(1, parseInt(page) || 1);
+            const offset = (page - 1) * PAGE_LIMIT;
+            
+            const { count, rows } = await Student.findAndCountAll({
+                where: {
+                    active: true
+                },
+                limit: PAGE_LIMIT,
+                offset: offset,
+                order: [['createdAt', 'DESC']],
+                include: [{
+                    model: User,
+                    attributes: ['firstName', 'lastName']
+                }]
+            });
+            return {
+                data: rows,
+                totalItems: count,
+                totalPages: Math.ceil(count / PAGE_LIMIT),
+                currentPage,
+            };
+        } catch (error) {
+            console.log('Find Error: ', error);
+            throw error;
+        }         
     }
 
     async findStudentById(id) {

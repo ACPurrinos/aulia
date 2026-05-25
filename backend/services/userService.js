@@ -57,9 +57,18 @@ const findUserById = async(id)=>{
     }
 }
 
-const findAllUsers = async()=>{
+const findAllUsers = async(page = 1)=>{
     try {
-        const users = await UserRepository.findAllUsers();
+        const users = await UserRepository.findAllUsers(page);
+        return users;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const findActiveUsers = async(page = 1)=>{
+    try {
+        const users = await UserRepository.findActiveUsers(page);
         return users;
     } catch (error) {
         throw new Error(error.message);
@@ -129,6 +138,7 @@ function createUserDto(user){
 const userService = {
     createUser,
     findAllUsers,
+    findActiveUsers,
     findUserById,
     updateUser,
     deleteUser

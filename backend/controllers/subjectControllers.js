@@ -11,7 +11,8 @@ const saveSubject = async(req,res)=>{
 
 const getAllSubjects = async(req, res)=>{
     try {
-        const subjects = await subjectService.findAllSubjects();
+        const { page } = req.query;
+        const subjects = await subjectService.findAllSubjects(page);
         if(subjects.length === 0){
             res.status(400).json({message: 'No subjects found'});
         }else{

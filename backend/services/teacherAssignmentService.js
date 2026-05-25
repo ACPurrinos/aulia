@@ -36,9 +36,9 @@ const findTeacherAssignmentbyId = async(id)=>{
     }
 }
 
-const findAllTeacherAssignment = async()=> {
+const findAllTeacherAssignment = async(page = 1)=> {
     try {
-        const assignments = await TeacherAssignmentRepository.findAllTeacherAssignments();
+        const assignments = await TeacherAssignmentRepository.findAllTeacherAssignments(page);
     return assignments;
     } catch (error) {
         throw new Error(error.message);

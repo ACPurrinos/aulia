@@ -11,7 +11,8 @@ const saveUser = async (req, res) => {
 
 const listUsers = async (req, res)=>{
     try {
-        const users = await userService.findAllUsers();
+        const { page } = req.query; // /?page=2
+        const users = await userService.findAllUsers(page);
         if(users.length !== 0){
             res.status(200).json(users);
         }else{
@@ -20,7 +21,21 @@ const listUsers = async (req, res)=>{
     } catch (error) {
         res.status(400).json({message: error.message});
     }
-}    
+}   
+
+const listActiveUsers = async (req, res)=>{
+    try {
+        const { page } = req.query; // /?page=2
+        const users = await userService.findActiveUsers(page);
+        if(users.length !== 0){
+            res.status(200).json(users);
+        }else{
+            res.status(400).json({message: 'No users found'});
+        }
+    } catch (error) {
+        res.status(400).json({message: error.message});
+    }
+}  
 
 const findUserById = async (req, res) => {
     try{
@@ -65,6 +80,7 @@ const userController = {
     saveUser, 
     findUserById,
     listUsers,
+    listActiveUsers,
     updateUser,
     deleteUser
 }

@@ -11,7 +11,8 @@ const saveTeacherAssignment = async(req, res)=>{
 
 const getAllTeacherAssignments = async(req, res)=>{
     try {
-        const assignments = await teacherAssignmentService.findAllTeacherAssignment();
+        const { page } = req.query;
+        const assignments = await teacherAssignmentService.findAllTeacherAssignment(page);
         if(assignments.length === 0){
             res.status(400).json({message: 'No Assigments found'})
         }

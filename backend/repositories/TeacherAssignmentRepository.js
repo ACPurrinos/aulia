@@ -14,12 +14,11 @@ class TeacherAssignmentRepository {
         }
     } 
 
-    async findAllTeacherAssignments(){
+    async findAllTeacherAssignments(page = 1){
         try {
             const PAGE_LIMIT = 10;
-            const DEFAULT_PAGE = 1;
 
-            const offset = (DEFAULT_PAGE - 1) * PAGE_LIMIT;
+            const offset = (page - 1) * PAGE_LIMIT;
             
             return await TeacherAssignment.findAndCountAll({
                 limit: PAGE_LIMIT,

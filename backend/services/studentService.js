@@ -43,9 +43,18 @@ const findStudentById = async(id)=>{
     }
 }
 
-const findAllStudents = async()=>{
+const findAllStudents = async(page = 1)=>{
     try {
-        const students = await StudentRepository.findAllStudents();
+        const students = await StudentRepository.findAllStudents(page);
+        return students;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const findActiveStudents = async(page = 1)=>{
+    try {
+        const students = await StudentRepository.findAllStudents(page);
         return students;
     } catch (error) {
         throw new Error(error.message);
@@ -80,6 +89,7 @@ const deleteStudent = async(id)=>{
 const studentService = {
     createStudent,
     findAllStudents,
+    findActiveStudents,
     findStudentById,
     updateStudent,
     deleteStudent

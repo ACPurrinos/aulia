@@ -11,22 +11,55 @@ class UserRepository {
         }
     } 
 
-    async findAllUsers(){
+    async findAllUsers(page = 1){
         try {
             const PAGE_LIMIT = 10;
-        const DEFAULT_PAGE = 1;
-
-        const offset = (DEFAULT_PAGE - 1) * PAGE_LIMIT;
-        
-        return await User.findAndCountAll({
-            limit: PAGE_LIMIT,
-            offset: offset,
-            order: [['createdAt', 'DESC']],
-        });
+            const currentPage = Math.max(1, parseInt(page) || 1);
+            const offset = (page - 1) * PAGE_LIMIT;
+            
+            const { count, rows } = await User.findAndCountAll({
+                limit: PAGE_LIMIT,
+                offset: offset,
+                order: [['createdAt', 'DESC']]
+            });
+            return {
+                data: rows,
+                totalItems: count,
+                totalPages: Math.ceil(count / PAGE_LIMIT),
+                currentPage,
+            };
         } catch (error) {
             console.log('Find Error: ', error);
+            throw error;
         }      
     }
+
+    async findActiveUsers(page = 1){
+        try {
+            const PAGE_LIMIT = 10;
+            const currentPage = Math.max(1, parseInt(page) || 1);
+            const offset = (page - 1) * PAGE_LIMIT;
+            
+            const { count, rows } = await User.findAndCountAll({
+                where: {
+                    active: true
+                },
+                limit: PAGE_LIMIT,
+                offset: offset,
+                order: [['createdAt', 'DESC']]
+            });
+            return {
+                data: rows,
+                totalItems: count,
+                totalPages: Math.ceil(count / PAGE_LIMIT),
+                currentPage,
+            };
+        } catch (error) {
+            console.log('Find Error: ', error);
+            throw error;
+        }         
+    }
+
 
     async findUserById(id) {
         try {
