@@ -6,50 +6,67 @@ import { CaseFileStatus } from '../enums/index.js';
 class CaseFileService {
 
   // crear legajo manual (si lo necesitás)
-  async createCaseFile(studentId) {
+  async createCaseFile(studentId, options = {}) {
+  const t = options.transaction || await sequelize.transaction();
 
-    const t = await sequelize.transaction();
-    try {
-      const existing = await CaseFileRepository.getByStudentId(studentId, {
-        transaction: t
-      });
-      if (existing) {
-        throw new Error('CaseFile already exists for this student');
-      }
-      const caseFile = await CaseFileRepository.create({
+  const isExternalTransaction = !!options.transaction;
+
+  try {
+    const existing = await CaseFileRepository.getByStudentId(
+      studentId,
+      { transaction: t }
+    );
+
+    if (existing) {
+      throw new Error('CaseFile already exists for this student');
+    }
+
+    const caseFile = await CaseFileRepository.create(
+      {
         studentId,
         status: CaseFileStatus.OPEN
-      }, { transaction: t });
-      await t.commit();
-      return caseFile;
+      },
+      { transaction: t }
+    );
 
-    } catch (error) {
-      await t.rollback();
-      throw new Error(`Error creating case file: ${error.message}`);
+    if (!isExternalTransaction) {
+      await t.commit();
     }
+
+    return caseFile;
+
+  } catch (error) {
+    if (!isExternalTransaction) {
+      await t.rollback();
+    }
+    throw new Error(`Error creating case file: ${error.message}`);
   }
+}
 
   // obtener o crear 
-  async getOrCreateByStudent(studentId) {
-    const t = await sequelize.transaction();
-    try {
-      let caseFile = await CaseFileRepository.getByStudentId(
-        studentId,
-        { transaction: t }
-      );
-      if (!caseFile) {
-        caseFile = await CaseFileRepository.create({
+  async getOrCreateByStudent(studentId, options = {}) {
+  try {
+    let caseFile = await CaseFileRepository.getByStudentId(
+      studentId,
+      options
+    );
+
+    if (!caseFile) {
+      caseFile = await CaseFileRepository.create(
+        {
           studentId,
           status: CaseFileStatus.OPEN
-        }, { transaction: t });
-      }
-      await t.commit();
-      return caseFile;
-    } catch (error) {
-      await t.rollback();
-      throw new Error(`Error getting/creating case file: ${error.message}`);
+        },
+        options
+      );
     }
+
+    return caseFile;
+
+  } catch (error) {
+    throw new Error(`Error getting/creating case file: ${error.message}`);
   }
+}
 
   // reabrir legajo
   async reopenCaseFile(caseFileId, userId) {

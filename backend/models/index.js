@@ -87,8 +87,7 @@ Intervention.belongsTo(User, {
 });
 
 // Documentación de Alumnos e Intervenciones
-Student.hasMany(Document, { foreignKey: 'studentId' });
-Document.belongsTo(Student, { foreignKey: 'studentId' });
+
 
 Intervention.hasMany(Document, { foreignKey: 'interventionId' });
 Document.belongsTo(Intervention, { foreignKey: 'interventionId' });
@@ -157,9 +156,12 @@ User.hasMany(Document, {
 });
 
 Document.belongsTo(User, {
-  foreignKey: 'uploadedBy',
-  as: 'uploadedByUser'
+  foreignKey: 'uploadedByUserId',
+  as: 'uploader'
 });
+
+CaseFile.hasMany(Document, { foreignKey: 'caseFileId' });
+Document.belongsTo(CaseFile, { foreignKey: 'caseFileId' });
 
 
 export {

@@ -75,6 +75,16 @@ class InterventionService {
     }
   }
 
+  async getByStudent(studentId) {
+  const caseFile = await CaseFileRepository.getByStudentId(studentId);
+
+  if (!caseFile) {
+    throw new Error('CaseFile not found for student');
+  }
+
+  return await InterventionRepository.findByCaseFileId(caseFile.id);
+}
+
   // LISTAR por profesional
   async getByProfessional(userId) {
 

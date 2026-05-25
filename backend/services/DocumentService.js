@@ -40,7 +40,7 @@ class DocumentService {
       // crear documento
       const document = await DocumentRepository.create({
         ...data,
-        uploadedByUserId: userId
+        uploadedByUserId: userId 
       });
       return document;
 

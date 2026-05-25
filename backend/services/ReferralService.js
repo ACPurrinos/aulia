@@ -1,6 +1,7 @@
 import ReferralRepository from '../repositories/ReferralRepository.js';
 import CaseFileService from './CaseFileService.js';
 import ReferralHistoryService from './ReferralHistoryService.js';
+import sequelize from '../data/db.js';
 
 import {
   ReferralStatusEnum,
@@ -36,42 +37,48 @@ class ReferralService {
 
   // ACEPTAR derivación (gabinete)
   async acceptReferral(referralId, userId, notes = '') {
+  const t = await sequelize.transaction();
 
-    try {
+  try {
+    const referral = await ReferralRepository.findById(referralId, { transaction: t });
 
-      const referral = await ReferralRepository.findById(referralId);
+    if (!referral) throw new Error('Referral not found');
 
-      if (!referral) throw new Error('Referral not found');
+    if (referral.status !== ReferralStatusEnum.PENDING) {
+      throw new Error('Referral already processed');
+    }
 
-      if (referral.status !== ReferralStatusEnum.PENDING) {
-        throw new Error('Referral already processed');
-      }
+    const caseFile = await CaseFileService.getOrCreateByStudent(
+      referral.studentId,
+      { transaction: t }
+    );
 
-      const caseFile = await CaseFileService.getOrCreateByStudent(
-        referral.studentId
-      );
-
-      const updated = await ReferralRepository.update(referralId, {
+    const updated = await ReferralRepository.update(
+      referralId,
+      {
         status: ReferralStatusEnum.IN_PROGRESS,
         reviewedAt: new Date(),
         reviewedBy: userId,
         caseFileId: caseFile.id
-      });
+      },
+      { transaction: t }
+    );
 
-      await ReferralHistoryService.registerHistory({
-        referralId,
-        action: ReferralActionEnum.ACCEPTED,
-        notes,
-        changedBy: userId
-      });
+    await ReferralHistoryService.registerHistory({
+      referralId,
+      action: ReferralActionEnum.ACCEPTED,
+      notes,
+      changedBy: userId
+    });
 
-      return updated;
+    await t.commit();
+    return updated;
 
-    } catch (error) {
-      throw new Error(`Error accepting referral: ${error.message}`);
-    }
+  } catch (error) {
+    await t.rollback();
+    throw new Error(`Error accepting referral: ${error.message}`);
   }
-
+}
   // RECHAZAR derivación
   async rejectReferral(referralId, userId, notes = '') {
 
