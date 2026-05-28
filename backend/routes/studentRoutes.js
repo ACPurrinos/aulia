@@ -6,6 +6,7 @@ import { createStudentSchema, updateStudentSchema } from '../validators/studentV
 
 router.get('/students', studentController.findAllStudents);
 router.get('/activeStudents', studentController.findActiveStudents);
+router.get('/studentsByTeacher/:id', studentController.findAllStudentsByTeacher);
 router.get('/studentId/:id', studentController.findStudentById);
 router.post('/saveStudent/', validateRequest(createStudentSchema), studentController.saveStudent);
 router.put('/updateStudent/:id', validateRequest(updateStudentSchema), studentController.updateStudent);

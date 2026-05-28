@@ -24,6 +24,21 @@ const findAllStudents = async(req, res)=>{
     }
 }
 
+const findAllStudentsByTeacher = async(req, res)=>{
+    try {
+        const id = req.params.id;
+        const { page } = req.query;
+        const students = await studentService.findAllStudentsByTeacher(id, page);
+        if(students.length !== 0){
+            res.status(200).json(students);
+        }else{
+            res.status(400).json({message: 'No students found'});
+        }
+    } catch (error) {
+        res.status(400).json({message: error.message});
+    }
+}
+
 const findActiveStudents = async(req, res)=>{
     try {
         const { page } = req.query;
@@ -80,6 +95,7 @@ const deleteStudent = async (req, res) => {
 const studentController = {
     saveStudent,
     findAllStudents,
+    findAllStudentsByTeacher,
     findActiveStudents,
     findStudentById,
     updateStudent,

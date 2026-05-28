@@ -1,5 +1,9 @@
+import { Op } from 'sequelize';
 import Student from '../models/Student.js';
 import User from '../models/User.js';
+import Course from '../models/Course.js';
+import TeacherAssignment from '../models/TeacherAssignment.js';
+import Subject from '../models/Subject.js';
 
 class StudentRepository {
 
@@ -38,6 +42,56 @@ class StudentRepository {
             throw error;
         }      
     }
+
+    async findAllStudentsByTeacher(teacherId, page = 1) {
+        try {
+            const PAGE_LIMIT = 10;
+            const currentPage = Math.max(1, parseInt(page) || 1);
+            const offset = (currentPage - 1) * PAGE_LIMIT;
+
+            const courseIds = await TeacherAssignment.findAll({
+                where: { teacherId },
+                attributes: ['courseId'],
+                raw: true
+            }).then(rows => [...new Set(rows.map(r => r.courseId))]);
+
+            if (!courseIds.length) {
+                return { data: [], totalItems: 0, totalPages: 0, currentPage };
+            }
+
+            const { count, rows } = await Student.findAndCountAll({
+                where: {
+                    courseId: { [Op.in]: courseIds },
+                    active: true
+                },
+                limit: PAGE_LIMIT,
+                offset,
+                order: [['createdAt', 'DESC']],
+                include: [
+                    {
+                        model: User,
+                        attributes: ['firstName', 'lastName']
+                    },
+                    {
+                        model: Course,
+                        attributes: ['grade', 'level', 'division']
+                    }
+                ],
+                distinct: true
+            });
+
+            return {
+                data: rows,
+                totalItems: count,
+                totalPages: Math.ceil(count / PAGE_LIMIT),
+                currentPage,
+            };
+
+        } catch (error) {
+            console.log('FindStudentsByTeacher Error:', error);
+            throw error;
+        }
+    }    
 
     async findActiveStudents(page = 1){
         try {

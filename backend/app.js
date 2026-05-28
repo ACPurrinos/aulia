@@ -1,4 +1,7 @@
 import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from "cookie-parser";
 import { startDatabase } from './data/helper_db.js';
 import userRoutes from './routes/userRoutes.js';
 import roleRoutes from './routes/roleRoutes.js';
@@ -6,18 +9,30 @@ import teacherAssignmentRoutes from './routes/teacherAssignmentRoutes.js';
 import studentRoutes from './routes/studentRoutes.js';
 import subjectRoutes from './routes/subjectRoutes.js';
 import checkInRoutes from './routes/checkInRoutes.js';
-
+import authRoutes from './routes/autRoutes.js';
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+const corsOptions = {
+  origin: 'https://aulia-frontend.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'], 
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(helmet());
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 
 // --- Rutas ---
 app.get('/', (req, res) => {
-  res.send('Aulia API - Sistema de Gestión Escolar listo.');
+  res.send('Aulia API - Sistema de Gestión Escolar');
 });
 
+app.use('/api/login', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/role', roleRoutes);
 app.use('/api/assignment', teacherAssignmentRoutes);
