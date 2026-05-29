@@ -1,8 +1,8 @@
 export const ReferralActionEnum = Object.freeze({
-  CREATED: 'Creado',
-  ACCEPTED: 'Aceptado',
-  REJECTED: 'Rechazado',
-  MORE_INFO_REQUESTED: 'Más información requerida',
-  INFO_PROVIDED: 'Más información provista',
-  CLOSED: 'Cerrado'
+  CREATED: 'CREATED',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  MORE_INFO_REQUESTED: 'MORE_INFO_REQUESTED',
+  INFO_PROVIDED: 'INFO_PROVIDED',
+  CLOSED: 'CLOSED'
 });

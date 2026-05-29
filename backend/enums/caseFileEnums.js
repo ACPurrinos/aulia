@@ -1,10 +1,11 @@
 export const CaseFilePriority = Object.freeze({
   LOW: 'Baja',
-  MEDIUM: 'Media',
+  NORMAL: 'Normal',
   HIGH: 'Alta'
 });
 
 export const CaseFileStatus = Object.freeze({
   OPEN: 'Abierto',
-  CLOSED: 'Cerrado'
+  CLOSED: 'Cerrado',
+  ARCHIVED: 'Archivado'
 });

@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
-import { ReferralStatusEnum, ReferralActionEnum } from '../enums/index.js';
+import { ReferralActionEnum } from '../enums/index.js';
 
 const ReferralHistory = sequelize.define('ReferralHistory', {
 
@@ -10,22 +10,24 @@ const ReferralHistory = sequelize.define('ReferralHistory', {
     autoIncrement: true
   },
 
+  referralId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Referral',
+      key: 'id'
+    },
+    onDelete: 'CASCADE'
+  },
+
   action: {
-  type: DataTypes.ENUM(...Object.values(ReferralActionEnum)),
-  allowNull: false
-},
+    type: DataTypes.ENUM(...Object.values(ReferralActionEnum)),
+    allowNull: false
+  },
 
-  oldStatus: {
-  type: DataTypes.ENUM(...Object.values(ReferralStatusEnum))
-},
-
-newStatus: {
-  type: DataTypes.ENUM(...Object.values(ReferralStatusEnum)),
-  allowNull: false
-},
-
-  comment: {
-    type: DataTypes.TEXT
+  notes: {
+    type: DataTypes.TEXT,
+    allowNull: true
   },
 
   changedBy: {
@@ -34,11 +36,13 @@ newStatus: {
     references: {
       model: 'User',
       key: 'id'
-    }
+    },
+    onDelete: 'RESTRICT'
   }
 
 }, {
-  timestamps: true
+  timestamps: true,
+  updatedAt: false // El historial no debería editarse
 });
 
 export default ReferralHistory;

@@ -94,9 +94,16 @@ class StudentRepository {
 
     async updateStudent(id, data) {
         try {
+<<<<<<< HEAD
         const [rowsAffected, [updated]] = await Student.update(data, { where: { id }, returning: true});
         if (rowsAffected === 0) throw new Error('Update error');
         return updated;
+=======
+            const student = await this.findStudentById(id);
+        if (!student) return null;
+
+        return await Student.update(data);
+>>>>>>> services-andrea
         } catch (error) {
             console.log('Update Error: ', error);
             throw error;
