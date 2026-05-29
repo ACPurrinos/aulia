@@ -8,17 +8,15 @@ export const createDocumentSchema = Joi.object({
         .max(100)
         .required(),
 
-    description: Joi.string()
+    storageKey: Joi.string()
         .trim()
         .required(),
 
     originalName: Joi.string()
-        .trim()
-        .required(),
+        .trim(),
 
     mimeType: Joi.string()
-        .trim()
-        .required(),
+        .trim(),
 
     fileSize: Joi.number()
         .integer()

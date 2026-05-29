@@ -56,7 +56,7 @@ class ReferralMessageService {
 
     try {
 
-      const message = await ReferralMessageRepository.getById(id);
+      const message = await ReferralMessageRepository.findById(id);
 
       if (!message) {
         throw new Error('Message not found');
@@ -67,7 +67,7 @@ class ReferralMessageService {
         throw new Error('Not authorized to delete this message');
       }
 
-      return await ReferralMessageRepository.delete(id);
+      return await ReferralMessageRepository.archive(id);
 
     } catch (error) {
       throw new Error(`Error deleting message: ${error.message}`);

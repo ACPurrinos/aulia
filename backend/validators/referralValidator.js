@@ -7,7 +7,7 @@ export const createReferralSchema = Joi.object({
         .valid(...Object.values(ReferralCategoriesEnum))
         .required(),
     
-    storageKey: Joi.string()
+    description: Joi.string()
         .trim()
         .required(),
 
@@ -26,18 +26,10 @@ export const createReferralSchema = Joi.object({
         .positive() 
         .required(),
 
-    referralId: Joi.number()
+    referrerId: Joi.number()
         .integer()
         .positive()
-        .required(),    
-        
-    reviewedAt: Joi.string()
-        .pattern(/^\d{4}-\d{2}-\d{2}$/),
-
-    reviewedBy: Joi.number()
-        .integer()
-        .positive()
-        .required(),    
+        .required(),      
 });
 
 export const updateReferralSchema = Joi.object({

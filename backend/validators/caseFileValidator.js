@@ -7,9 +7,9 @@ export const createCaseFileSchema = Joi.object({
         .required(),
 
     options: Joi.object({
-            transaction: Joi.object()
-            .optional()
-            .allow(null),
-            })
-            .default({}) // Si no que sea un objeto vacío
+        transaction: Joi.object()
+        .optional()
+        .allow(null),
+        })
+        .default({}) // Si no que sea un objeto vacío
 });

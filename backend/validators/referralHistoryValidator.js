@@ -14,10 +14,5 @@ export const createReferralHistorySchema = Joi.object({
         .required(), 
 
     notes: Joi.string()
-        .trim(),
-
-    changedBy: Joi.number()
-        .integer()
-        .positive()
-        .required(),        
+        .trim(),      
 });
