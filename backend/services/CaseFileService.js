@@ -121,8 +121,7 @@ class CaseFileService {
     }
   }
 
-   async getById(id) {
-
+  async getById(id) {
     try {
       const caseFile =
         await CaseFileRepository.findById(id);

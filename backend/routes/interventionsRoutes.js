@@ -1,9 +1,12 @@
 import express from 'express';
 import InterventionController from '../controllers/interventionController.js';
+import validateRequest from '../middlewares/validateRequest.js';
+import { createInterventionSchema } from '../validators/interventionValidator.js';
+
 
 const router = express.Router();
 
-router.post('/', InterventionController.create);
+router.post('/', validateRequest(createInterventionSchema), InterventionController.create);
 
 router.get('/:id', InterventionController.getById);
 

@@ -51,7 +51,6 @@ const Referral = sequelize.define('Referral', {
       key: 'id'
     }
   },
-  // ===============================================
 
   reviewedAt: {
     type: DataTypes.DATE
