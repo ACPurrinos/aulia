@@ -29,7 +29,9 @@ app.use(cookieParser());
 
 // --- Rutas ---
 app.get('/', (req, res) => {
-  res.send('Aulia API - Sistema de Gestión Escolar');
+  res.status(200).json({ 
+    message: "Welcome to the API" 
+  });
 });
 
 app.use('/api/login', authRoutes);
@@ -44,7 +46,7 @@ app.use('/api/checkIn', checkInRoutes);
 app.listen(PORT, async () => {  
   try {
     await startDatabase();
-    console.log(`Servidor Aulia corriendo en http://localhost:${PORT}`);
+    console.log(`Aulia corriendo en http://localhost:${PORT}`);
   } 
   catch (error) { 
     console.error('Error al iniciar el servidor: ', error);
