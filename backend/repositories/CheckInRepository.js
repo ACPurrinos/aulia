@@ -15,10 +15,6 @@ class CheckInRepository {
           [Op.gte]: today
         }
       },
-<<<<<<< HEAD
-      include: [{ model: Student, attributes: ['id'], 
-                  include: [{ model: User, attributes: ['lastName', 'firstName']}] }]
-=======
       include: [
         {
           model: Student,
@@ -35,7 +31,6 @@ class CheckInRepository {
           ]
         }
       ]
->>>>>>> services-andrea
     });
   }
 
@@ -43,10 +38,6 @@ class CheckInRepository {
   async getUrgentHelpRequests() {
     return await CheckIn.findAll({
       where: { helpRequested: true },
-<<<<<<< HEAD
-      include: [{ model: Student, attributes: ['id'], 
-                  include: [{ model: User, attributes: ['lastName', 'firstName']}] }],
-=======
       include: [
         {
           model: Student,
@@ -63,7 +54,6 @@ class CheckInRepository {
           ]
         }
       ],
->>>>>>> services-andrea
       order: [['createdAt', 'DESC']]
     });
   }
