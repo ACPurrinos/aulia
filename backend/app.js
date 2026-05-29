@@ -10,6 +10,12 @@ import studentRoutes from './routes/studentRoutes.js';
 import subjectRoutes from './routes/subjectRoutes.js';
 import checkInRoutes from './routes/checkInRoutes.js';
 import authRoutes from './routes/autRoutes.js';
+import referralRoutes from './routes/referralRoutes.js';
+import interventionRoutes from './routes/interventionsRoutes.js';
+import documentRoutes from './routes/documentRoutes.js';
+import caseFileRoutes from './routes/caseFileRoutes.js';
+import referralHistoryRoutes from './routes/referralHistoryRoutes.js';
+import referralMessageRoutes from './routes/referralMessageRoutes.js';
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -27,6 +33,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+  req.user = { id: 2 };
+  next();
+});
+
 // --- Rutas ---
 app.get('/', (req, res) => {
   res.status(200).json({ 
@@ -41,6 +52,12 @@ app.use('/api/assignment', teacherAssignmentRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/subject', subjectRoutes);
 app.use('/api/checkIn', checkInRoutes);
+app.use('/api/referrals', referralRoutes);
+app.use('/api/interventions', interventionRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/casefiles', caseFileRoutes);
+app.use('/api/referral-history', referralHistoryRoutes);
+app.use('/api/referrals', referralMessageRoutes);
 
 
 app.listen(PORT, async () => {  

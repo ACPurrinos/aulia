@@ -1,57 +1,173 @@
-import Referral from '../models/Referral.js'
+import { Referral, Student, User, CaseFile } from '../models/index.js';
 
 class ReferralRepository {
 
-    async saveReferral(referralData) {
-        try {
-            return await Referral.create(referralData);
-        } catch (error) {
-            console.log('Save Error: ', error);
-        }
-    } 
-
-    async findAllReferrals(){
-        try {
-            const PAGE_LIMIT = 10;
-        const DEFAULT_PAGE = 1;
-
-        const offset = (DEFAULT_PAGE - 1) * PAGE_LIMIT;
-        
-        return await Referral.findAndCountAll({
-            limit: PAGE_LIMIT,
-            offset: offset,
-            order: [['createdAt', 'DESC']],
-        });
-        } catch (error) {
-            console.log('Find Error: ', error);
-        }      
+  async create(referralData, options) {
+    try {
+      return await Referral.create(referralData, options);
+    } catch (error) {
+      throw new Error(
+        `Error creating referral: ${error.message}`
+      );
     }
+  }
 
-    async findReferralById(id) {
-        try {
-            return await Referral.findByPk(id);    
-        } catch (error) {
-            console.log('Find Error: ', error);
-        }       
+  async findAll(options) {
+    try {
+      return await Referral.findAll({
+        ...options,
+        include: [
+          {
+            model: Student,
+            attributes: [
+              'id',
+              'birthDate',
+              'active'
+            ],
+            include: [
+              {
+                model: User,
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
+              }
+            ]
+          },
+
+          {
+            model: User,
+            as: 'referrer',
+            attributes: [
+              'id',
+              'firstName',
+              'lastName'
+            ]
+          },
+
+          {
+            model: CaseFile,
+            attributes: [
+              'id',
+              'status',
+              'priority'
+            ],
+            required: false
+          }
+        ],
+
+        order: [
+          ['createdAt', 'DESC']
+        ]
+      });
+
+    } catch (error) {
+      throw new Error(
+        `Error fetching referrals: ${error.message}`
+      );
     }
+  }
 
-    async updateReferral(id, data) {
-        try {
-            const referral = await this.findById(id);
-        if (!referral) return null;
+  async findById(id, options) {
+    try {
+      return await Referral.findByPk(id, {
+        ...options,
+        include: [
+          {
+            model: Student,
+            attributes: [
+              'id',
+              'birthDate',
+              'active'
+            ],
+            include: [
+              {
+                model: User,
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
+              }
+            ]
+          },
 
-        return await Referral.update(data);
-        } catch (error) {
-            console.log('Update Error: ', error);
-        }     
+          {
+            model: User,
+            as: 'referrer',
+            attributes: [
+              'id',
+              'firstName',
+              'lastName'
+            ]
+          },
+
+          {
+            model: User,
+            as: 'reviewer',
+            attributes: [
+              'id',
+              'firstName',
+              'lastName'
+            ],
+            required: false
+          },
+
+          {
+            model: CaseFile,
+            attributes: [
+              'id',
+              'status',
+              'priority'
+            ],
+            required: false
+          }
+        ]
+      });
+
+    } catch (error) {
+      throw new Error(
+        `Error fetching referral ${id}: ${error.message}`
+      );
     }
+  }
 
-    async deleteReferral(id) {
-        try {
-            const deleted = await Referral.destroy({ where: { id } });
-        return deleted > 0;
-        } catch (error) {
-            console.log('Delete Error: ', error);
-        }
+  async update(id, updateData, options) {
+    try {
+      const referral = await Referral.findByPk(id, options);
+
+      if (!referral) {
+        return null;
+      }
+
+      return await referral.update(updateData, options);
+
+    } catch (error) {
+      throw new Error(
+        `Error updating referral ${id}: ${error.message}`
+      );
     }
+  }
+
+  async archive(id, options) {
+    try {
+      const referral = await Referral.findByPk(id, options);
+
+      if (!referral) {
+        return false;
+      }
+
+      await referral.destroy(options);
+
+      return true;
+
+    } catch (error) {
+      throw new Error(
+        `Error archiving referral ${id}: ${error.message}`
+      );
+    }
+  }
 }
+
+export default new ReferralRepository();

@@ -1,12 +1,14 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
-import { AlertTypes, AlertPriorities } from '../enums/index.js';
 
-/**
- * Modelo Alert: Representa un evento significativo detectado o reportado
- * que requiere la atención del equipo de orientación escolar.
- */
+import {
+  AlertTypes,
+  AlertPriorities,
+  AlertStatusEnum
+} from '../enums/index.js';
+
 const Alert = sequelize.define('Alert', {
+
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -14,33 +16,82 @@ const Alert = sequelize.define('Alert', {
   },
 
   type: {
-    type: DataTypes.ENUM(...Object.values(AlertTypes)),
-    allowNull: false,
-    validate: {
-      notEmpty: true
-    }
+    type: DataTypes.ENUM(
+      ...Object.values(AlertTypes)
+    ),
+    allowNull: false
   },
-  // Nivel de urgencia para la gestión del flujo de trabajo del gabinete
+
+  source: {
+    type: DataTypes.ENUM(
+      'SYSTEM',
+      'CHECKIN',
+      'TEACHER',
+      'PRECEPTOR',
+      'MANUAL'
+    ),
+    allowNull: false
+  },
+
   priority: {
-    type: DataTypes.ENUM(...Object.values(AlertPriorities)),
-    defaultValue: AlertPriorities.MEDIUM
+    type: DataTypes.ENUM(
+      ...Object.values(AlertPriorities)
+    ),
+    allowNull: false,
+    defaultValue: AlertPriorities.NORMAL
   },
-  // Descripción fenomenológica: qué se observa, sin juicios de valor
+
+  status: {
+    type: DataTypes.ENUM(
+      ...Object.values(AlertStatusEnum)
+    ),
+    allowNull: false,
+    defaultValue: AlertStatusEnum.PENDING
+  },
+
   description: {
-    type: DataTypes.STRING(500), 
+    type: DataTypes.TEXT,
     allowNull: false,
     validate: {
-      len: [5, 500] 
+      len: [5, 1000]
     }
   },
-  // Estado del ciclo de intervención
-  isResolved: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
+
+  triggerReason: {
+    type: DataTypes.STRING(255),
+    allowNull: true
   },
-  
-}, { 
-  timestamps: true
+
+  studentId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Student',
+      key: 'id'
+    }
+  },
+
+  createdById: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'User',
+      key: 'id'
+    }
+  },
+
+  referralId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Referral',
+      key: 'id'
+    }
+  }
+
+}, {
+  timestamps: true,
+  paranoid: true
 });
 
 export default Alert;

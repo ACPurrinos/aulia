@@ -2,9 +2,7 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../data/db.js';
 import { ReferralStatusEnum, ReferralCategoriesEnum } from '../enums/index.js';
 
-
 const Referral = sequelize.define('Referral', {
-
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -24,8 +22,36 @@ const Referral = sequelize.define('Referral', {
   status: {
     type: DataTypes.ENUM(...Object.values(ReferralStatusEnum)),
     defaultValue: ReferralStatusEnum.PENDING
-  
   },
+
+
+  studentId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Student',
+      key: 'id'
+    }
+  },
+
+  referrerId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'User',
+      key: 'id'
+    }
+  },
+
+  caseFileId: {
+    type: DataTypes.INTEGER,
+    allowNull: true, // Nulo al principio, se vincula al aceptar la derivación
+    references: {
+      model: 'CaseFile',
+      key: 'id'
+    }
+  },
+  // ===============================================
 
   reviewedAt: {
     type: DataTypes.DATE
@@ -38,7 +64,6 @@ const Referral = sequelize.define('Referral', {
       key: 'id'
     }
   }
-
 }, {
   timestamps: true,
   paranoid: true

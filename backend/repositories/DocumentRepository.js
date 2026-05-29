@@ -1,40 +1,172 @@
-import { Document, Student, Intervention, User } from '../models/index.js';
+import {Document, CaseFile, Student, Intervention, User, Course} from '../models/index.js';
 
 class DocumentRepository {
 
-  // 1. Registrar un nuevo documento (cuando suben un archivo)
   async create(documentData) {
-    return await Document.create(documentData);
+    try {
+      return await Document.create(documentData);
+    } catch (error) {
+      throw new Error(
+        `Error creating document: ${error.message}`
+      );
+    }
   }
 
-  // 2. Buscar un documento específico por su ID (útil para cuando lo quieren descargar)
-  async getById(id) {
-    return await Document.findByPk(id);
+  async findById(id) {
+    try {
+      return await Document.findByPk(id, {
+        include: [
+          {
+            model: CaseFile,
+            include: [
+              {
+                model: Student,
+                attributes: [
+                  'id',
+                  'birthDate'
+                ],
+                include: [
+                  {
+                    model: User,
+                    attributes: [
+                      'id',
+                      'firstName',
+                      'lastName'
+                    ]
+                  },
+
+                  {
+                    model: Course,
+                    attributes: [
+                      'id',
+                      'level',
+                      'grade',
+                      'academicYear',
+                      'division'
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+
+          {
+            model: Intervention,
+            required: false
+          },
+          {
+            model: User,
+            as: 'uploader',
+            attributes: [
+              'id',
+              'firstName',
+              'lastName'
+            ]
+          }
+        ]
+
+      });
+
+    } catch (error) {
+      throw new Error(
+        `Error fetching document ${id}: ${error.message}`
+      );
+    }
   }
 
-  // 3. Traer todos los documentos de la carpeta de un alumno
-  async getByStudentId(studentId) {
-    return await Document.findAll({
-      where: { studentId },
-      order: [['createdAt', 'DESC']] // Los más nuevos arriba
-    });
+  async findByCaseFileId(caseFileId) {
+    try {
+      return await Document.findAll({
+        where: {
+          caseFileId
+        },
+        include: [
+          {
+            model: User,
+            as: 'uploader',
+            attributes: [
+              'id',
+              'firstName',
+              'lastName'
+            ]
+          }
+        ],
+        order: [
+          ['documentDate', 'DESC'],
+          ['createdAt', 'DESC']
+        ]
+      });
+    } catch (error) {
+      throw new Error(
+        `Error fetching case file documents: ${error.message}`
+      );
+    }
   }
 
-  // 4. Traer los documentos adjuntos a una intervención específica
-  async getByInterventionId(interventionId) {
-    return await Document.findAll({
-      where: { interventionId },
-      order: [['createdAt', 'DESC']]
-    });
+  async findByInterventionId(interventionId) {
+
+    try {
+      return await Document.findAll({
+        where: {
+          interventionId
+        },
+        include: [
+          {
+            model: User,
+            as: 'uploader',
+            attributes: [
+              'id',
+              'firstName',
+              'lastName'
+            ]
+          }
+        ],
+
+        order: [
+          ['createdAt', 'DESC']
+        ]
+      });
+
+    } catch (error) {
+      throw new Error(
+        `Error fetching intervention documents: ${error.message}`
+      );
+    }
   }
 
-  // 5. Eliminar un documento del sistema (Borrado físico o lógico)
-  // Nota: Generalmente en escuelas se borra el registro de la BD si se equivocaron de archivo
-  async delete(id) {
-    const document = await Document.findByPk(id);
-    if (!document) return false;
-    await document.destroy();
-    return true;
+  async update(id, updateData) {
+    try {
+      const document =
+        await Document.findByPk(id);
+      if (!document) {
+        return null;
+      }
+      return await document.update(updateData);
+    } catch (error) {
+      throw new Error(
+        `Error updating document ${id}: ${error.message}`
+      );
+    }
+  }
+
+  // Soft delete por paranoid
+  async archive(id) {
+
+    try {
+      const document =
+        await Document.findByPk(id);
+      if (!document) {
+        return false;
+      }
+
+      await document.destroy();
+      return true;
+    } catch (error) {
+
+      throw new Error(
+        `Error archiving document ${id}: ${error.message}`
+      );
+    }
   }
 }
 
