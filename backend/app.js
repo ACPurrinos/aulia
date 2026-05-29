@@ -33,10 +33,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use((req, res, next) => {
-  req.user = { id: 2 };
-  next();
-});
 
 // --- Rutas ---
 app.get('/', (req, res) => {

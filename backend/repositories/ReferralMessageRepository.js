@@ -6,13 +6,9 @@ import {
 class ReferralMessageRepository {
 
   async create(messageData) {
-
     try {
-
       return await ReferralMessage.create(messageData);
-
     } catch (error) {
-
       throw new Error(
         `Error creating referral message: ${error.message}`
       );
@@ -54,11 +50,8 @@ class ReferralMessageRepository {
   }
 
   async findById(id) {
-
     try {
-
       return await ReferralMessage.findByPk(id, {
-
         include: [
           {
             model: User,
@@ -82,20 +75,14 @@ class ReferralMessageRepository {
   }
 
   async archive(id) {
-
     try {
-
       const message =
         await ReferralMessage.findByPk(id);
-
       if (!message) {
         return false;
       }
-
       await message.destroy();
-
       return true;
-
     } catch (error) {
 
       throw new Error(

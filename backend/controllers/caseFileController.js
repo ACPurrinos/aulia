@@ -39,7 +39,6 @@ class CaseFileController {
 
   // obtiene o crea por studentId
   async getById(req, res) {
-
     try {
       const { studentId } = req.params;
       if (!studentId) {
@@ -65,15 +64,12 @@ class CaseFileController {
   async close(req, res) {
 
     try {
-
       const { id } = req.params;
-
       if (!id) {
         return res.status(400).json({
           message: 'caseFile id is required'
         });
       }
-
       const result =
         await CaseFileService.closeCaseFile(id);
 
@@ -82,11 +78,8 @@ class CaseFileController {
           message: 'CaseFile not found'
         });
       }
-
       return res.json(result);
-
     } catch (error) {
-
       return res.status(500).json({
         message: error.message
       });
@@ -96,9 +89,7 @@ class CaseFileController {
   async reopen(req, res) {
 
     try {
-
       const { id } = req.params;
-
       if (!id) {
         return res.status(400).json({
           message: 'caseFile id is required'
@@ -116,11 +107,8 @@ class CaseFileController {
           message: 'CaseFile not found'
         });
       }
-
       return res.json(result);
-
     } catch (error) {
-
       return res.status(500).json({
         message: error.message
       });
