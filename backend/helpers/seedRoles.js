@@ -1,5 +1,5 @@
 import { Role } from '../models/index.js';
-import { UserRolesEnum } from '../enums/index.js'; // Traemos las constantes
+import { UserRolesEnum } from '../enums/index.js'; 
 
 const seedRoles = async () => {
   try {
@@ -15,10 +15,10 @@ const seedRoles = async () => {
       // Ahora bulkCreate recibe la lista automática
       await Role.bulkCreate(rolesToCreate);
 
-      console.log('✅ Roles iniciales creados con éxito desde las constantes.');
+      console.log('Roles iniciales creados con éxito desde las constantes.');
     }
   } catch (error) {
-    console.error('❌ Error al sembrar roles:', error.message);
+    console.error('Error al sembrar roles:', error.message);
   }
 };
 

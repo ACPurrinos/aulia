@@ -1,7 +1,7 @@
 import '../models/index.js';
 import 'dotenv/config';
 import { sequelize } from '../models/index.js';
-import seedRoles from '../seeders/seedRoles.js';
+import seedRoles from '../helpers/seedRoles.js';
 
 
 // --- Conexión y Sincronización ---
@@ -9,11 +9,11 @@ export const startDatabase = async () => {
     try {
         await sequelize.authenticate();
         console.log('---');
-        console.log('✅ Conexión exitosa a PostgreSQL.');
+        console.log('Conexión exitosa a PostgreSQL.');
 
         // Usamos alter: true para proteger tus datos de aquí en adelante
         await sequelize.sync({ alter: true });
-        console.log('✅ Modelos sincronizados.');
+        console.log('Modelos sincronizados.');
 
         // Ejecutamos la función de carga inicial
         await seedRoles();
