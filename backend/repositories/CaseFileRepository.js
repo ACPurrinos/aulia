@@ -1,69 +1,60 @@
-import { CaseFile, Student, Referral, Intervention, Course } from '../models/index.js';
+import { CaseFile, Student } from '../models/index.js';
 
 class CaseFileRepository {
-  
-  // 1. Abrir un nuevo legajo (cuando el gabinete acepta una derivación)
-  async create(caseFileData) {
-    return await CaseFile.create(caseFileData);
+
+  async create(data, options) {
+    try {
+      return await CaseFile.create(data, options);
+    } catch (error) {
+      throw new Error(`Error creating case file: ${error.message}`);
+    }
   }
 
-  // 2. Traer un legajo COMPLETO con toda la información histórica
-  async getFullHistoryById(id) {
-    return await CaseFile.findByPk(id, {
-      include: [
-        { 
-          model: Student, 
-          attributes: ['id', 'firstName', 'lastName', 'birthDate'],
-          include: [{ model: Course, attributes: ['level', 'grade', 'division'] }]
-        },
-        { 
-          model: Referral, 
-          attributes: ['id', 'category', 'description', 'status'] 
-        },
-        { 
-          model: Intervention,
-          // Ordenamos las intervenciones de la más nueva a la más vieja
-          separate: true, 
-          order: [['interventionDate', 'DESC']]
-        }
-      ]
-    });
+  async findById(id, options) {
+    try {
+      return await CaseFile.findByPk(id, options);
+    } catch (error) {
+      throw new Error(`Error fetching case file: ${error.message}`);
+    }
   }
 
-  // 3. Traer todos los legajistas abiertos (para el panel de control del gabinete)
-  async getAllOpen() {
-    return await CaseFile.findAll({
-      where: { status: 'Abierto' }, // Usando el valor de su CaseFileStatus enum
-      include: [
-        { model: Student, attributes: ['id', 'firstName', 'lastName'] }
-      ],
-      order: [['priority', 'ASC'], ['updatedAt', 'DESC']] // Primero los de prioridad Alta
-    });
+  async getByStudentId(studentId, options) {
+    try {
+      return await CaseFile.findOne({
+        where: { studentId },
+        ...options
+      });
+    } catch (error) {
+      throw new Error(`Error fetching student case file: ${error.message}`);
+    }
   }
 
-  // 4. Buscar si un estudiante ya tiene un legajo abierto
-  // Evita que abran dos carpetas para el mismo alumno al mismo tiempo
-  async getOpenByStudentId(studentId) {
-    return await CaseFile.findOne({
-      where: { 
-        studentId, 
-        status: 'Abierto' 
-      }
-    });
+  async update(id, updateData, options) {
+    try {
+      const caseFile = await CaseFile.findByPk(id, options);
+
+      if (!caseFile) return null;
+
+      return await caseFile.update(updateData, options);
+
+    } catch (error) {
+      throw new Error(`Error updating case file: ${error.message}`);
+    }
   }
 
-  // 5. Actualizar el legajo (por ejemplo, cambiar la prioridad de Media a Alta)
-  async update(id, updateData) {
-    const caseFile = await CaseFile.findByPk(id);
-    if (!caseFile) return null;
-    return await caseFile.update(updateData);
-  }
+  async archive(id, options) {
+    try {
+      const caseFile = await CaseFile.findByPk(id, options);
 
-  // 6. Cerrar el legajo (cuando se finaliza el acompañamiento del alumno)
-  async closeCase(id) {
-    const caseFile = await CaseFile.findByPk(id);
-    if (!caseFile) return null;
-    return await caseFile.update({ status: 'Cerrado' });
+      if (!caseFile) return false;
+
+      await caseFile.destroy(options);
+
+      return true;
+
+    } catch (error) {
+      throw new Error(`Error archiving case file: ${error.message}`);
+    }
   }
 }
 

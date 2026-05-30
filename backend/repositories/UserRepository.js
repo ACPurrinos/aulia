@@ -27,6 +27,10 @@ class UserRepository {
                 totalItems: count,
                 totalPages: Math.ceil(count / PAGE_LIMIT),
                 currentPage,
+                include: [{
+                    model: Role,
+                    attributes: ['name']
+                }]
             };
         } catch (error) {
             console.log('Find Error: ', error);
@@ -46,7 +50,11 @@ class UserRepository {
                 },
                 limit: PAGE_LIMIT,
                 offset: offset,
-                order: [['createdAt', 'DESC']]
+                order: [['createdAt', 'DESC']],
+                include: [{
+                    model: Role,
+                    attributes: ['name']
+                }]
             });
             return {
                 data: rows,
@@ -82,6 +90,18 @@ class UserRepository {
     async findUserByIdWithPassword(id){
         try {
             return await User.scope('withPassword').findByPk(id);
+        } catch (error) {
+            console.log('Find with password Error: ', error);
+        }
+    };
+
+    async findUserByUsernameWithPassword(username){
+        try {
+            return await User.scope('withPassword').findOne(
+                {where: {
+                username: username
+                }
+            });
         } catch (error) {
             console.log('Find with password Error: ', error);
         }

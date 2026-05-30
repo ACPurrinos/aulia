@@ -14,16 +14,27 @@ const ReferralMessage = sequelize.define('ReferralMessage', {
     allowNull: false
   },
 
-  senderType: {
-    type: DataTypes.ENUM(
-      'Teacher',
-      'Cabinet'
-    ),
-    allowNull: false
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'User',
+      key: 'id'
+    }
+  },
+
+  referralId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Referral',
+      key: 'id'
+    }
   }
 
 }, {
-  timestamps: true
+  timestamps: true,
+  paranoid: true
 });
 
 export default ReferralMessage;

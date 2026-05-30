@@ -18,8 +18,6 @@ const TeacherAssignment = sequelize.define('TeacherAssignment', {
 }, {
   freezeTableName: true,
   timestamps: true,
-
-  
 });
 
 export default TeacherAssignment;

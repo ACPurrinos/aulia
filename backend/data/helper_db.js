@@ -1,3 +1,4 @@
+import '../models/index.js';
 import 'dotenv/config';
 import { sequelize } from '../models/index.js';
 import seedRoles from '../seeders/seedRoles.js';
