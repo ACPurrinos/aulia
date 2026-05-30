@@ -16,6 +16,7 @@ import documentRoutes from './routes/documentRoutes.js';
 import caseFileRoutes from './routes/caseFileRoutes.js';
 import referralHistoryRoutes from './routes/referralHistoryRoutes.js';
 import referralMessageRoutes from './routes/referralMessageRoutes.js';
+import courseRoutes from './routes/courseRoutes.js';
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -47,6 +48,7 @@ app.use('/api/role', roleRoutes);
 app.use('/api/assignment', teacherAssignmentRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/subject', subjectRoutes);
+app.use('/api/course', courseRoutes);
 app.use('/api/checkIn', checkInRoutes);
 app.use('/api/referrals', referralRoutes);
 app.use('/api/interventions', interventionRoutes);

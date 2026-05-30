@@ -4,12 +4,17 @@ class CourseRepository {
 
   // 1. Crear un nuevo curso (ej: "1° Año A - Secundaria")
   async create(courseData) {
-    return await Course.create(courseData);
+    try {
+      return await Course.create(courseData);
+    } catch (error) {
+      throw error
+    }   
   }
 
   // 2. Traer todos los cursos activos del año escolar actual
   async getAllActive() {
-    return await Course.findAll({
+    try {
+      return await Course.findAll({
       where: { active: true },
       order: [
         ['level', 'ASC'],
@@ -17,16 +22,24 @@ class CourseRepository {
         ['division', 'ASC']
       ]
     });
+    } catch (error) {
+      throw error
+    }  
   }
 
   // 3. Buscar un curso por su ID (sin más detalles)
   async getById(id) {
-    return await Course.findByPk(id);
+    try {
+      return await Course.findByPk(id);
+    } catch (error) {
+      throw error
+    }   
   }
 
   // 4. Traer la lista de alumnos de un curso (La "lista de asistencia" o la división)
   async getCourseWithStudents(id) {
-    return await Course.findByPk(id, {
+    try {
+      return await Course.findByPk(id, {
       include: [
         {
           model: Student,
@@ -47,11 +60,15 @@ class CourseRepository {
       ],
       order: [[Student, User, 'lastName', 'ASC']]
     });
+    } catch (error) {
+      throw error
+    } 
   }
 
   // 5. Traer las materias y profesores asignados a este curso (Para el panel escolar)
   async getCoursePlantaDocente(id) {
-    return await Course.findByPk(id, {
+    try {
+      return await Course.findByPk(id, {
       include: [
         {
           model: TeacherAssignment,
@@ -62,13 +79,20 @@ class CourseRepository {
         }
       ]
     });
+    } catch (error) {
+      throw error
+    }   
   }
 
   // 6. Dar de baja un curso (borrado lógico cambiando el flag active)
-  async deactivate(id) {
-    const course = await Course.findByPk(id);
+  async desactivate(id) {
+    try {
+      const course = await Course.findByPk(id);
     if (!course) return null;
     return await course.update({ active: false });
+    } catch (error) {
+      throw error
+    }   
   }
 }
 

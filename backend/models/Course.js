@@ -8,11 +8,12 @@ const Course = sequelize.define('Course', {
     primaryKey: true,
     autoIncrement: true
   },
+  
   academicYear: {
-  type: DataTypes.INTEGER,
-  allowNull: false,
-  defaultValue: new Date().getFullYear()
-},
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: new Date().getFullYear()
+  },
   
   level: {
     type: DataTypes.ENUM(...Object.values(CourseLevels)), 
