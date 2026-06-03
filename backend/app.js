@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from "cookie-parser";
-import { startDatabase } from './data/helper_db.js';
 import userRoutes from './routes/userRoutes.js';
 import roleRoutes from './routes/roleRoutes.js';
 import teacherAssignmentRoutes from './routes/teacherAssignmentRoutes.js';
@@ -57,15 +56,7 @@ app.use('/api/casefiles', caseFileRoutes);
 app.use('/api/referral-history', referralHistoryRoutes);
 app.use('/api/referrals', referralMessageRoutes);
 
+export default app;
 
-app.listen(PORT, async () => {  
-  try {
-    await startDatabase();
-    console.log(`Aulia corriendo en http://localhost:${PORT}`);
-  } 
-  catch (error) { 
-    console.error('Error al iniciar el servidor: ', error);
-  }
-});
 
 

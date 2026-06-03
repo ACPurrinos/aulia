@@ -1,6 +1,5 @@
 import UserRepository from '../repositories/UserRepository.js';
 import RolRepository from '../repositories/RolRepository.js';
-import User from '../models/User.js';
 import bcrypt from "bcryptjs";
 
 const createUser = async(user)=>{
@@ -24,7 +23,7 @@ const createUser = async(user)=>{
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(user.password.trim(), salt);
 
-        const us = new User({
+        const us = {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
@@ -32,8 +31,8 @@ const createUser = async(user)=>{
             password: hashedPassword,
             active: true,
             roleId: foundRole.id,
-        });
-        const savedUser = await us.save();
+        };
+        const savedUser = await UserRepository.saveUser(us);
         if(savedUser){
             const userDto = createUserDto(savedUser);
             return {message: 'User created successfully', user: userDto};
