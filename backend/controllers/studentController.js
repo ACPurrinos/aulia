@@ -63,6 +63,16 @@ const findStudentById = async (req, res) => {
     }
 }
 
+const findStudentByUserId = async (req, res) => {
+    try{
+        const id = req.params.id;
+        const student = await studentService.findStudentByUserId(id);
+        res.status(200).json(student);
+    } catch (error) {
+        res.status(400).json({message: error.message});
+    }
+}
+
 const updateStudent = async (req, res) => {
     try {
         const id = req.params.id;
@@ -98,6 +108,7 @@ const studentController = {
     findAllStudentsByTeacher,
     findActiveStudents,
     findStudentById,
+    findStudentByUserId,
     updateStudent,
     deleteStudent
 }

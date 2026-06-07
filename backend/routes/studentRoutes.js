@@ -10,6 +10,7 @@ router.get('/students', verifyToken, authorize("Admin"), studentController.findA
 router.get('/activeStudents', verifyToken, authorize("Admin", "Gabinete"), studentController.findActiveStudents);
 router.get('/studentsByTeacher/:id', verifyToken, authorize("Admin", "Docente", "Gabinete"), studentController.findAllStudentsByTeacher);
 router.get('/studentId/:id', verifyToken, authorize("Admin", "Docente", "Gabinete"), studentController.findStudentById);
+router.get('/byUser/:id', verifyToken, authorize("Admin", "Alumno"), studentController.findStudentByUserId);
 router.post('/saveStudent/', verifyToken, authorize("Admin"), validateRequest(createStudentSchema), studentController.saveStudent);
 router.put('/updateStudent/:id', verifyToken, authorize("Admin"), validateRequest(updateStudentSchema), studentController.updateStudent);
 router.delete('/deleteStudent/:id', verifyToken, authorize("Admin"), studentController.deleteStudent);

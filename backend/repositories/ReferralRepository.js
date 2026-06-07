@@ -1,4 +1,4 @@
-import { Referral, Student, User, CaseFile } from '../models/index.js';
+import { Referral, Student, User, CaseFile, Course } from '../models/index.js';
 
 class ReferralRepository {
 
@@ -54,7 +54,7 @@ class ReferralRepository {
               'priority'
             ],
             required: false
-          }
+          },
         ],
 
         order: [

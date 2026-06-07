@@ -8,15 +8,40 @@ export const createStudentSchema = Joi.object({
     familyConsent: Joi.boolean()
         .default(false),
 
-    userId: Joi.number()
-            .integer()
-            .positive()
-            .required(),
-
     courseId: Joi.number()
         .integer()
         .positive()
-        .required(),
+        .required(),    
+
+    user: Joi.object({
+        username: Joi.string()
+            .trim()
+            .min(3)
+            .max(45)
+            .required(),
+    
+        firstName: Joi.string()
+            .trim()
+            .max(45)
+            .required(),
+    
+        lastName: Joi.string()
+            .trim()
+            .max(45)
+            .required(),
+    
+        email: Joi.string()
+            .email()
+            .max(45)
+            .required(),
+    
+        password: Joi.string()
+            .min(3) // TO DO cambiar el mínimo para producción
+            .required(),
+    
+        role: Joi.string()
+            .required()
+    }).required(),
 });
 
 

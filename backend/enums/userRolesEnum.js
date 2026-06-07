@@ -6,3 +6,5 @@ export const UserRolesEnum = Object.freeze({
   DIRECTIVO: 'Directivo',
   ALUMNO: 'Alumno'
 });
+
+export const ALL_ROLES = Object.values(UserRolesEnum);

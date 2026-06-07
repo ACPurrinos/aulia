@@ -27,10 +27,12 @@ class CourseRepository {
     }  
   }
 
-  // 3. Buscar un curso por su ID (sin más detalles)
-  async getById(id) {
+  // 3. Buscar un curso por su ID
+  async getById(id, options = {}) {
     try {
-      return await Course.findByPk(id);
+      return await Course.findByPk(id, {
+                transaction: options.transaction
+            });
     } catch (error) {
       throw error
     }   

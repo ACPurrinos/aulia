@@ -3,11 +3,14 @@ import Role from '../models/Role.js'
 
 class UserRepository {
 
-    async saveUser(UserData) {
+    async saveUser(UserData, options = {}) {
         try {
-            return await User.create(UserData);
+            return await User.create(UserData, {
+                transaction: options.transaction
+            });
         } catch (error) {
             console.log('Save Error: ', error);
+            throw error;
         }
     } 
 
@@ -107,24 +110,28 @@ class UserRepository {
         }
     };
 
-    async findByUsername(username){
+    async findByUsername(username, options={}){
         try {
             return await User.findOne(
-                {where: {
-                username: username
-                }
+                {
+                where: {
+                    username: username
+                },
+                transaction: options.transaction
             })
         } catch (error) {
             console.log('Find username Error: ', error);
         }
     }
 
-    async findByEmail(email){
+    async findByEmail(email, options={}){
         try {
             return await User.findOne(
-                {where: {
-                email: email
-                }
+                {
+                where: {
+                    email: email
+                },
+                transaction: options.transaction
             })
         } catch (error) {
             console.log('Find email Error: ', error);

@@ -1,40 +1,56 @@
 import StudentRepository from '../repositories/StudentRepository.js'
 import UserRepository from '../repositories/UserRepository.js';
 import CourseRepository from '../repositories/CourseRepository.js'
+import userService from '../services/userService.js';
+import sequelize from '../data/db.js';
 
-
-const createStudent = async(student)=>{
+const createStudent = async (data) => {
     try {
-        const userFound = await UserRepository.findUserByIdWithRole(student.userId);
-        if(!userFound) throw new Error('User not found');
-        if(userFound.Role.name !== 'Alumno') throw new Error('This user is not a Student');
+        const result = await sequelize.transaction(async (t) => {
+            const newUser = await userService.createUser(data.user, { transaction: t });
+            const userId = newUser.user.id; 
 
-        const studentFound = await StudentRepository.findStudentByIdUser(student.userId);
-        if(studentFound) throw new Error('Student already exists');
+            const courseFound = await CourseRepository.getById(data.courseId, { transaction: t });
+            if (!courseFound) throw new Error('Course not found');
 
-        const courseFound = await CourseRepository.getById(student.courseId);
-        if(!courseFound) throw new Error('Course not found');
+            const stu = {
+                birthDate: data.birthDate,
+                familyConsent: data.familyConsent,
+                active: true,
+                userId: userId, 
+                courseId: data.courseId
+            };
 
-        const stu = {
-            birthDate: student.birthDate,
-            familyConsent: student.familyConsent,
-            active: true,
-            userId: userFound.id,
-            courseId: student.courseId
-        };
-        const savedStudent = await StudentRepository.saveStudent(stu);
-        if(!savedStudent){
-            throw new Error('Error while saving student');
-        }
-        return {message: 'Student created successfully', student: savedStudent};
+            const savedStudent = await StudentRepository.saveStudent(stu, { transaction: t });
+            if (!savedStudent) throw new Error('Error while saving student');
+
+            return {
+                message: 'Student and User created successfully',
+                user: newUser.user, 
+                student: savedStudent
+            };
+        });
+
+        return result;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const findStudentById = async(id)=>{
+    try {
+        const foundStudent = await StudentRepository.findStudentById(id);
+        if(!foundStudent) throw new Error('Student not found');
+
+        return foundStudent;
     } catch (error) {
         throw new Error(error.message);
     }
 }
 
-const findStudentById = async(id)=>{
+const findStudentByUserId = async(id)=>{
     try {
-        const foundStudent = await StudentRepository.findStudentById(id);
+        const foundStudent = await StudentRepository.findStudentByUserId(id);
         if(!foundStudent) throw new Error('Student not found');
 
         return foundStudent;
@@ -101,6 +117,7 @@ const studentService = {
     findAllStudentsByTeacher,
     findActiveStudents,
     findStudentById,
+    findStudentByUserId,
     updateStudent,
     deleteStudent
 }

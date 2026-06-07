@@ -22,12 +22,12 @@ const loginUser = async (user) => {
         const token = jwt.sign({ 
             id: foundUser.id,
             username: foundUser.username,
-            role: foundRole.name 
+            role: foundRole.name
             }, 
             process.env.SECRET_KEY, 
             {expiresIn: "1h"});
 
-        return {islogin: true, token: token, role: foundRole.name};
+        return {islogin: true, token: token, userId: foundUser.id, email: foundUser.email, role: foundRole.name};
     } catch (error) {
         console.log(error.message);
         throw error;

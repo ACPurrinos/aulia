@@ -7,9 +7,11 @@ import Subject from '../models/Subject.js';
 
 class StudentRepository {
 
-    async saveStudent(StudentData) {
+    async saveStudent(StudentData, options={}) {
         try {
-            return await Student.create(StudentData);
+            return await Student.create(StudentData, {
+            transaction: options.transaction
+            });
         } catch (error) {
             console.log('Save Error: ', error);
             throw error;
@@ -29,6 +31,10 @@ class StudentRepository {
                 include: [{
                     model: User,
                     attributes: ['firstName', 'lastName']
+                },
+                {
+                    model: Course,
+                    attributes: ['grade', 'level', 'division']
                 }]
             });
             return {
@@ -109,7 +115,11 @@ class StudentRepository {
                 include: [{
                     model: User,
                     attributes: ['firstName', 'lastName']
-                }]
+                },
+                {
+                    model: Course,
+                    attributes: ['grade', 'level', 'division']
+                }],
             });
             return {
                 data: rows,
@@ -129,6 +139,10 @@ class StudentRepository {
             include: [{
                 model: User,
                 attributes: ['firstName', 'lastName'] 
+            },
+            {
+                model: Course,
+                attributes: ['grade', 'level', 'division']
             }]
         });    
         } catch (error) {
@@ -137,9 +151,18 @@ class StudentRepository {
         }       
     }
 
-    async findStudentByIdUser(id) {
+    async findStudentByUserId(id) {
         try {
-            return await Student.findOne({where:{userId: id}});    
+            return await Student.findOne({where:{userId: id}, include: [
+                {
+                model: User,
+                attributes: ['active'] 
+                },
+                {
+                    model: Course,
+                    attributes: ['grade', 'level', 'division']
+                }]
+            });    
         } catch (error) {
             console.log('Find Error: ', error);
             throw error;

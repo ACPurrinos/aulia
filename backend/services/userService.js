@@ -1,20 +1,21 @@
 import UserRepository from '../repositories/UserRepository.js';
-import RolRepository from '../repositories/RolRepository.js';
+import RolRepository from '../repositories/RolRepository.js'
 import bcrypt from "bcryptjs";
 
-const createUser = async(user)=>{
+const createUser = async(user, options = {})=>{
     try {
-        const foundUsername = await UserRepository.findByUsername(user.username);
+        const { transaction } = options;
+        const foundUsername = await UserRepository.findByUsername(user.username, {transaction});
 
         if(foundUsername){
             throw new Error ('The username already exists');        
         }
-        const foundUser = await UserRepository.findByEmail(user.email);
+        const foundUser = await UserRepository.findByEmail(user.email, {transaction});
 
         if(foundUser){
             throw new Error ('The user already exists') 
         }
-        const foundRole = await RolRepository.findByName(user.role);
+        const foundRole = await RolRepository.findByName(user.role, {transaction});
         
         if(!foundRole){
             throw new Error ('The role dont exists'); 
@@ -32,7 +33,7 @@ const createUser = async(user)=>{
             active: true,
             roleId: foundRole.id,
         };
-        const savedUser = await UserRepository.saveUser(us);
+        const savedUser = await UserRepository.saveUser(us, {transaction});
         if(savedUser){
             const userDto = createUserDto(savedUser);
             return {message: 'User created successfully', user: userDto};

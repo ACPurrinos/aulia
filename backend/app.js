@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 const corsOptions = {
-  origin: 'https://aulia-frontend.vercel.app',
+  origin: ['https://aulia-frontend.vercel.app', 'http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'], 
   credentials: true,

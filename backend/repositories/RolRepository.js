@@ -7,6 +7,7 @@ class RolRepository {
             return await Role.create(RolData);
         } catch (error) {
             console.log('Save Error: ', error);
+            throw error;
         }
     } 
 
@@ -23,6 +24,7 @@ class RolRepository {
         });
         } catch (error) {
             console.log('Find Error: ', error);
+            throw error;
         }      
     }
 
@@ -31,18 +33,22 @@ class RolRepository {
             return await Role.findByPk(id);    
         } catch (error) {
             console.log('Find Error: ', error);
+            throw error;
         }       
     }
 
-    async findByName(name){
+    async findByName(name, options={}){
         try {
             return await Role.findOne(
-                {where: {
-                name: name
-                }
+                {
+                    where: {
+                            name: name    
+                        },
+                    transaction: options.transaction     
             })
         } catch (error) {
             console.log('Find name Error: ', error);
+            throw error;
         }
     }
 
@@ -53,6 +59,7 @@ class RolRepository {
         return updated;
         } catch (error) {
             console.log('Update Error: ', error);
+            throw error;
         }     
     }
 
@@ -62,6 +69,7 @@ class RolRepository {
         return deleted > 0;
         } catch (error) {
             console.log('Delete Error: ', error);
+            throw error;
         }
     }
 }
