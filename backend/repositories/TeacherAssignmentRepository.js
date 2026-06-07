@@ -50,7 +50,7 @@ class TeacherAssignmentRepository {
         throw error;
     }       
 }
-    async findTeacherAssignmentByUser(useIrd) {
+    async findTeacherAssignmentByUser(userId) {
         try {
             return await TeacherAssignment.findAll({where: {teacherId: userId}});    
         } catch (error) {
