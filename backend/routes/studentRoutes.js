@@ -7,6 +7,7 @@ import { verifyToken, authorize } from '../middlewares/authMiddleware.js';
 
 
 router.get('/students', verifyToken, authorize("Admin"), studentController.findAllStudents);
+router.get('/withoutActiveCase', verifyToken, authorize("Admin", "Gabinete"), studentController.findAllStudentsWithoutCaseFile);
 router.get('/activeStudents', verifyToken, authorize("Admin", "Gabinete"), studentController.findActiveStudents);
 router.get('/studentsByTeacher/:id', verifyToken, authorize("Admin", "Docente", "Gabinete"), studentController.findAllStudentsByTeacher);
 router.get('/studentId/:id', verifyToken, authorize("Admin", "Docente", "Gabinete"), studentController.findStudentById);

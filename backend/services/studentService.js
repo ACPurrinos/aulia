@@ -68,6 +68,15 @@ const findAllStudents = async(page = 1)=>{
     }
 }
 
+const findAllStudentsWithoutCaseFile = async(page = 1)=>{
+    try {
+        const students = await StudentRepository.findStudentsWithoutOpenCaseFile(page);
+        return students;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
 const findAllStudentsByTeacher = async(id, page = 1)=>{
     try {
         const students = await StudentRepository.findAllStudentsByTeacher(id, page);
@@ -114,6 +123,7 @@ const deleteStudent = async(id)=>{
 const studentService = {
     createStudent,
     findAllStudents,
+    findAllStudentsWithoutCaseFile,
     findAllStudentsByTeacher,
     findActiveStudents,
     findStudentById,

@@ -1,4 +1,6 @@
 import { CaseFile, Student } from '../models/index.js';
+import { Op } from 'sequelize';
+import { CaseFileStatus } from '../enums/index.js';
 
 class CaseFileRepository {
 
@@ -28,6 +30,7 @@ class CaseFileRepository {
       throw new Error(`Error fetching student case file: ${error.message}`);
     }
   }
+  
 
   async update(id, updateData, options) {
     try {

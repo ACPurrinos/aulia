@@ -1,9 +1,7 @@
 import { Op } from 'sequelize';
-import Student from '../models/Student.js';
-import User from '../models/User.js';
-import Course from '../models/Course.js';
-import TeacherAssignment from '../models/TeacherAssignment.js';
-import Subject from '../models/Subject.js';
+import { Student, CaseFile, User, Course, TeacherAssignment, Subject } from '../models/index.js';
+import { CaseFileStatus } from '../enums/index.js';
+
 
 class StudentRepository {
 
@@ -48,6 +46,56 @@ class StudentRepository {
             throw error;
         }      
     }
+
+    async findStudentsWithoutOpenCaseFile(page = 1) {
+        try {
+            const PAGE_LIMIT = 10;
+            const currentPage = Math.max(1, parseInt(page) || 1);
+            const offset = (currentPage - 1) * PAGE_LIMIT;
+
+            const { count, rows } = await Student.findAndCountAll({
+                limit: PAGE_LIMIT,
+                offset: offset,
+                order: [['createdAt', 'DESC']],
+                // Evita que Sequelize rompa el conteo y la paginación al filtrar por el LEFT JOIN
+                subQuery: false, 
+                include: [
+                    {
+                        model: User,
+                        attributes: ['firstName', 'lastName']
+                    },
+                    {
+                        model: Course,
+                        attributes: ['grade', 'level', 'division']
+                    },
+                    {
+                        model: CaseFile,
+                        where: {
+                            status: CaseFileStatus.OPEN
+                        },
+                        required: false, // LEFT JOIN: Trae al estudiante aunque no tenga CaseFile abierto
+                        attributes: []   // No queremos datos vacíos de CaseFile en el resultado final
+                    }
+                ],
+                where: {
+                    // Si el ID del CaseFile abierto es NULL, el estudiante entra en la lista
+                    '$CaseFile.id$': {
+                        [Op.is]: null
+                    }
+                }
+            });
+            return {
+                data: rows,
+                totalItems: count,
+                totalPages: Math.ceil(count / PAGE_LIMIT),
+                currentPage,
+            };
+        } catch (error) {
+            console.error('Error fetching students without open case file:', error);
+            throw new Error(`Error fetching students without open case file: ${error.message}`);
+        }      
+    }
+
 
     async findAllStudentsByTeacher(teacherId, page = 1) {
         try {

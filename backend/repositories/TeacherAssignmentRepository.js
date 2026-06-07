@@ -52,7 +52,13 @@ class TeacherAssignmentRepository {
 }
     async findTeacherAssignmentByUser(userId) {
         try {
-            return await TeacherAssignment.findAll({where: {teacherId: userId}});    
+            return await TeacherAssignment.findAll({
+                where: {teacherId: userId},
+                include: [
+                { model: Course, attributes: ['grade', 'division', 'level'] },
+                { model: Subject, attributes: ['name'] },
+                ]
+            });    
         } catch (error) {
             console.log('Find Error: ', error);
             throw error;
