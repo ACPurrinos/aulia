@@ -22,7 +22,7 @@ const app = express();
 
 const corsOptions = {
   origin: ['https://aulia-frontend.vercel.app', 'http://localhost:5173'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'], 
   credentials: true,
   optionsSuccessStatus: 200
