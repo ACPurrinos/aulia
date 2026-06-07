@@ -13,9 +13,13 @@ El proyecto busca facilitar la detección temprana, el seguimiento y la interven
 - PostgreSQL
 - Sequelaze
 - Dotenv
+- Bycrypt
 - JWT
+- Helmet
 - Cookies
 - Joi Validator
+- Jest
+- Supertest
 
 ## Convenciones del proyecto
 
