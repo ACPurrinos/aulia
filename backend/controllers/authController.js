@@ -14,8 +14,10 @@ const login = async (req, res) => {
 
         return res.status(200).json({ 
             isLogin: true, 
+            userid: result.userId,
+            email: result.email,
             role: result.role,
-            token: result.token
+            token: result.token // Eliminar en prodcción ya que se guarda en la cookie
         });
 
     } catch (error) {
