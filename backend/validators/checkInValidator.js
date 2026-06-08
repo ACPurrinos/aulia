@@ -14,8 +14,7 @@ export const createCheckInSchema = Joi.object({
         .optional(),
 
     comment: Joi.string()
-        .trim()
-        .required(),
+        .trim(),
 
     helpRequested: Joi.boolean()
         .default(false),
