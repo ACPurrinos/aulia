@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 const createUser = async(user, options = {})=>{
     try {
         const { transaction } = options;
-        const foundUsername = await UserRepository.findByUsername(user.username, {transaction});
+        const foundUsername = await UserRepository.findByUsername(user.username.toLowerCase(), {transaction});
 
         if(foundUsername){
             throw new Error ('The username already exists');        
@@ -28,7 +28,7 @@ const createUser = async(user, options = {})=>{
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
-            username: user.username,
+            username: user.username.toLowerCase(),
             password: hashedPassword,
             active: true,
             roleId: foundRole.id,
