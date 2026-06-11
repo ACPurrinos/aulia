@@ -5,17 +5,17 @@ import bcrypt from "bcryptjs";
 const createUser = async(user, options = {})=>{
     try {
         const { transaction } = options;
-        const foundUsername = await UserRepository.findByUsername(user.username.toLowerCase(), {transaction});
+        const foundUsername = await UserRepository.findByUsername(user.username.toLowerCase().trim(), {transaction});
 
         if(foundUsername){
             throw new Error ('The username already exists');        
         }
-        const foundUser = await UserRepository.findByEmail(user.email, {transaction});
+        const foundUser = await UserRepository.findByEmail(user.email.trim(), {transaction});
 
         if(foundUser){
             throw new Error ('The user already exists') 
         }
-        const foundRole = await RolRepository.findByName(user.role, {transaction});
+        const foundRole = await RolRepository.findByName(user.role.trim(), {transaction});
         
         if(!foundRole){
             throw new Error ('The role dont exists'); 

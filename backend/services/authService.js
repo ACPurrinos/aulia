@@ -6,10 +6,10 @@ import jwt from "jsonwebtoken";
 
 const loginUser = async (user) => {
     try { 
-        if (!user.username.toLowerCase() || !user.password) {
+        if (!user.username.toLowerCase().trim() || !user.password.trim()) {
         throw new Error('Username and password are required');
         }
-        const foundUser = await UserRepository.findUserByUsernameWithPassword(user.username.toLowerCase());
+        const foundUser = await UserRepository.findUserByUsernameWithPassword(user.username.toLowerCase().trim());
         if (!foundUser) {
         throw new Error('Invalid credentials');
         }
