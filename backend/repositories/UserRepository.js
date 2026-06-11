@@ -23,17 +23,17 @@ class UserRepository {
             const { count, rows } = await User.findAndCountAll({
                 limit: PAGE_LIMIT,
                 offset: offset,
-                order: [['createdAt', 'DESC']]
+                order: [['createdAt', 'DESC']],
+                include: [{
+                    model: Role,
+                    attributes: ['name']
+                }]
             });
             return {
                 data: rows,
                 totalItems: count,
                 totalPages: Math.ceil(count / PAGE_LIMIT),
                 currentPage,
-                include: [{
-                    model: Role,
-                    attributes: ['name']
-                }]
             };
         } catch (error) {
             console.log('Find Error: ', error);
