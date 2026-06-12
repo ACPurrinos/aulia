@@ -11,6 +11,14 @@ const sequelize = new Sequelize(
     dialect: 'postgres',
     logging: false,
 
+    dialectOptions: {
+      ssl: {
+        require: true,                  
+        rejectUnauthorized: false,    
+        servername: process.env.DB_HOST 
+      }
+    },
+
     define: {
       freezeTableName: true // Evita la pluralización automática (ej: Role se queda como Role)
     }
