@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/', verifyToken, authorize("Admin", "Gabinete", "Docente"), validateRequest(createReferralSchema), referralController.create);
 
 router.get('/', verifyToken, authorize("Admin", "Gabinete"), referralController.getAll);
-router.get('/byTeacher/:id', verifyToken, authorize("Admin", "Gabinete"), referralController.getAllByTeacher);
+router.get('/byTeacher/:id', verifyToken, authorize("Admin", "Gabinete", "Docente"), referralController.getAllByTeacher);
 router.get('/:id', verifyToken, authorize("Admin", "Gabinete", "Docente"), referralController.getById);
 
 router.patch('/:id/accept', verifyToken, authorize("Admin", "Gabinete"), validateRequest(updateReferralSchema), referralController.accept);
