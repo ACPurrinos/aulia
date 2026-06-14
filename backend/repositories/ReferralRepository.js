@@ -12,7 +12,63 @@ class ReferralRepository {
     }
   }
 
-  
+  async findAll(options = {}) {
+    try {
+      return await Referral.findAll({
+        ...options,
+        include: [
+          {
+            model: Student,
+            attributes: [
+              'id',
+              'birthDate',
+              'active'
+            ],
+            include: [
+              {
+                model: User,
+                attributes: [
+                  'id',
+                  'firstName',
+                  'lastName'
+                ]
+              }
+            ]
+          },
+
+          {
+            model: User,
+            as: 'referrer',
+            attributes: [
+              'id',
+              'firstName',
+              'lastName'
+            ]
+          },
+
+          {
+            model: CaseFile,
+            attributes: [
+              'id',
+              'status',
+              'priority'
+            ],
+            required: false
+          },
+        ],
+
+        order: [
+          ['createdAt', 'DESC']
+        ]
+      });
+
+    } catch (error) {
+      throw new Error(
+        `Error fetching referrals: ${error.message}`
+      );
+    }
+  }
+
   async findAllByTeacher(teacherId, options = {}) {
     try {
       return await Referral.findAll({
