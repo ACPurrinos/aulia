@@ -12,7 +12,8 @@ class ReferralRepository {
     }
   }
 
-  async findAll(options) {
+  
+  async findAllByTeacher(teacherId, options = {}) {
     try {
       return await Referral.findAll({
         ...options,
@@ -59,7 +60,8 @@ class ReferralRepository {
 
         order: [
           ['createdAt', 'DESC']
-        ]
+        ], 
+        where: {referrerId: teacherId}
       });
 
     } catch (error) {

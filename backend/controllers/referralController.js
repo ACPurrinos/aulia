@@ -70,36 +70,51 @@ class ReferralController {
   }
 
   async getAll(req, res) {
-
-  try {
-
-    const referrals = await ReferralService.getAllReferrals();
-
-    return res.json(referrals);
-
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message
-    });
+    try {
+      const referrals = await ReferralService.getAllReferrals();
+      return res.json(referrals);
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message
+      });
+    }
   }
-}
 
-async getById(req, res) {
-
-  try {
-
-    const referral = await ReferralService.getReferralById(
-      req.params.id
-    );
-
-    return res.json(referral);
-
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message
-    });
+  async getAllByTeacher(req, res) {
+    try {
+      const id = req.params.id;
+      const referrals = await ReferralService.getAllReferralsByTeacher({}, id);
+      return res.json(referrals);
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message
+      });
+    }
   }
-}
+
+  async getAll(req, res) {
+    try {
+      const referrals = await ReferralService.getAllReferrals();
+      return res.json(referrals);
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message
+      });
+    }
+  }
+
+  async getById(req, res) {
+    try {
+      const referral = await ReferralService.getReferralById(
+        req.params.id
+      );
+      return res.json(referral);
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message
+      });
+    }
+  }
 }
 
 export default new ReferralController();

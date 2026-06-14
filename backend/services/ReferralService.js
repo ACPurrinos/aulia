@@ -146,20 +146,30 @@ class ReferralService {
   }
 
   async getAllReferrals() {
-  return await ReferralRepository.findAll();
-}
-
-async getReferralById(id) {
-  const referral = await ReferralRepository.findById(id);
-
-  if (!referral) {
-    throw new Error('Referral not found');
+    try {
+      return await ReferralRepository.findAll();
+    } catch (error) {
+      throw new Error(`Error requesting more info: ${error.message}`);
+    }
   }
 
-  return referral;
-}
+  async getAllReferralsByTeacher({}, teacherId) {
+    try {
+      return await ReferralRepository.findAllByTeacher(teacherId);
+    } catch (error) {
+      throw new Error(`Error requesting more info: ${error.message}`);
+    }
+  }
 
 
+  async getReferralById(id) {
+    const referral = await ReferralRepository.findById(id);
+
+    if (!referral) {
+      throw new Error('Referral not found');
+    }
+    return referral;
+  }
 }
 
 export default new ReferralService();
