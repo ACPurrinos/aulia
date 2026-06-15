@@ -134,6 +134,21 @@ class CaseFileService {
         `Error fetching case file: ${error.message}`
       );
     }
-  }}
+  }
+
+  async getAll(page) {
+    try {
+      const caseFiles = await CaseFileRepository.findAll(page);
+      if (!caseFiles) {
+        throw new Error('No CaseFiles found');
+      }
+      return caseFiles;
+    } catch (error) {
+      throw new Error(
+        `Error fetching case file: ${error.message}`
+      );
+    }
+  }
+}
 
 export default new CaseFileService();

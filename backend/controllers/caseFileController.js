@@ -46,14 +46,8 @@ class CaseFileController {
           message: 'studentId is required'
         });
       }
-
-      const caseFile =
-        await CaseFileService.getOrCreateByStudent(
-          studentId
-        );
-
+      const caseFile = await CaseFileService.getOrCreateByStudent(studentId);
       return res.json(caseFile);
-
     } catch (error) {
       return res.status(500).json({
         message: error.message
@@ -62,7 +56,6 @@ class CaseFileController {
   }
 
   async close(req, res) {
-
     try {
       const { id } = req.params;
       if (!id) {
@@ -70,9 +63,7 @@ class CaseFileController {
           message: 'caseFile id is required'
         });
       }
-      const result =
-        await CaseFileService.closeCaseFile(id);
-
+      const result = await CaseFileService.closeCaseFile(id);
       if (!result) {
         return res.status(404).json({
           message: 'CaseFile not found'
@@ -87,7 +78,6 @@ class CaseFileController {
   }
 
   async reopen(req, res) {
-
     try {
       const { id } = req.params;
       if (!id) {
@@ -95,13 +85,11 @@ class CaseFileController {
           message: 'caseFile id is required'
         });
       }
-
       const result =
         await CaseFileService.reopenCaseFile(
           id,
           req.user?.id
         );
-
       if (!result) {
         return res.status(404).json({
           message: 'CaseFile not found'
@@ -116,29 +104,43 @@ class CaseFileController {
   }
 
   async getCaseFileById(req, res) {
-
-  try {
-    const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({
-        message: 'caseFile id is required'
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return res.status(400).json({
+          message: 'caseFile id is required'
+        });
+      }
+      const caseFile = await CaseFileService.getById(id);
+      if (!caseFile) {
+        return res.status(404).json({
+          message: 'CaseFile not found'
+        });
+      }
+      return res.json(caseFile);
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message
       });
     }
-    const caseFile =
-      await CaseFileService.getById(id);
-    if (!caseFile) {
-      return res.status(404).json({
-        message: 'CaseFile not found'
-      });
-    }
-    return res.json(caseFile);
-
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message
-    });
   }
-}
+
+  async getAll(req, res) {
+    try {
+      const { page } = req.query;
+      const caseFiles = await CaseFileService.getAll(page);
+      if (!caseFiles) {
+        return res.status(404).json({
+          message: 'CaseFile not found'
+        });
+      }
+      return res.json(caseFiles);
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message
+      });
+    }
+  }
 }
 
 export default new CaseFileController();

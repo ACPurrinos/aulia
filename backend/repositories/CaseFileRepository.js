@@ -20,6 +20,24 @@ class CaseFileRepository {
     }
   }
 
+  async findAll(page = 1){
+        try {
+            const PAGE_LIMIT = 10;
+
+            const offset = (page - 1) * PAGE_LIMIT;
+            
+            return await CaseFile.findAndCountAll({
+                limit: PAGE_LIMIT,
+                offset: offset,
+                order: [['createdAt', 'DESC']],
+                where: { status: "Abierto" }
+            });
+        } catch (error) {
+            console.log('Find Error: ', error);
+            throw error;
+        }      
+    }
+
   async getByStudentId(studentId, options) {
     try {
       return await CaseFile.findOne({

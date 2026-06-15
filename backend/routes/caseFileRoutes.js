@@ -9,6 +9,9 @@ const router = express.Router();
 // crear legajo
 router.post('/', verifyToken, authorize("Admin", "Gabinete"), validateRequest(createCaseFileSchema), caseFileController.create);
 
+// raer todos case files
+router.get('/', verifyToken, authorize("Admin", "Gabinete"), caseFileController.getAll);
+
 // obtener o crear por student
 router.get('/student/:studentId', verifyToken, authorize("Admin", "Gabinete", "Docente"), caseFileController.getById);
 
