@@ -54,8 +54,8 @@ describe('User Service', () => {
             expect(userRepository.saveUser).toHaveBeenCalledWith({
                 firstName: USER_DATA.firstName, lastName: USER_DATA.lastName,
                 email: USER_DATA.email, username: USER_DATA.username,
-                password: 'hashedPassword', active: true, roleId: 1
-            });
+                password: 'hashedPassword', active: true, roleId: 1,
+            }, { transaction: undefined });
             expect(result).toEqual({ message: 'User created successfully', user: USER });
         });
 
