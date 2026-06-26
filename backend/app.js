@@ -23,8 +23,8 @@ const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
 const corsOptions = {
   origin: isProduction 
-    ? 'https://xxxx-frontend.vercel.app' 
-    : ['https://xxxx-frontend.vercel.app', 'http://localhost:5173'],
+    ? 'https://aulia-frontend.vercel.app' 
+    : ['https://aulia-frontend.vercel.app', 'http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'], 
   credentials: true,
