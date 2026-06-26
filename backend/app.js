@@ -20,8 +20,11 @@ import courseRoutes from './routes/courseRoutes.js';
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+const isProduction = process.env.NODE_ENV === 'production';
 const corsOptions = {
-  origin: ['https://aulia-frontend.vercel.app', 'http://localhost:5173'],
+  origin: isProduction 
+    ? 'https://xxxx-frontend.vercel.app' 
+    : ['https://xxxx-frontend.vercel.app', 'http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'], 
   credentials: true,
